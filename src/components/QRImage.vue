@@ -53,5 +53,6 @@
   margin: auto;
   text-align: center;
   width: 200px;
+  margin-bottom: 20px;
 }
 </style>
