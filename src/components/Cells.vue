@@ -32,10 +32,10 @@
       value="风景">
     </mt-cell>
     <mt-cell
-      title="动态二位吗"
+      title="动态生成二维码"
       to="/Study/QRImage"
       is-link
-      value="暂时不支持中文">
+      value="">
     </mt-cell>
   </div>
 </template>

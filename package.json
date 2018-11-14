@@ -22,6 +22,7 @@
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
     "mint-ui": "^2.2.13",
+    "qrcodejs2": "0.0.2",
     "sessionstorage": "^0.1.0",
     "vue": "^2.5.2",
     "vue-awesome-mui": "^1.7.3",
