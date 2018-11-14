@@ -1,5 +1,5 @@
 <template>
-  <!--下拉更新数据-->
+  <!--下拉更新数据...-->
   <div class="page-loadmore">
     <h1 class="page-title">下拉更新数据</h1>
     <p class="page-loadmore-desc">translate : {{ translate }}</p>
