@@ -5,6 +5,9 @@
 ## Build Setup
 
 ``` bash
+# 写点啥呢
+公司用的是SVN,GIT是我自己想要用的，并且这个APP（算是吧）是我自己业余时间做的。
+
 # install dependencies
 npm install
 
