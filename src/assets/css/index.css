@@ -1,0 +1,103 @@
+*{
+  margin: 0px;
+  padding: 0px;
+}
+.container-my{
+  text-align: left;
+  background-color: aliceblue;
+  overflow: hidden;
+}
+html,body,#app,.container-my{
+  height: 100%;
+  width: 100%;
+}
+h1{
+  text-align: center;
+}
+.drawer{
+  background-color: black;
+  height: 100%;
+}
+.head-img{
+  height: 80%;
+  width: auto;
+  border-radius: 50%;
+  margin-top: 10%;
+}
+.content-wrap{
+
+}
+.content{
+  height: 100%;
+ /* overflow-y: scroll;*/
+}
+.menu-click{
+  background-color: #eaeaea;
+  color: #26a2ff;
+}
+.swipe-index{
+  height: 200px !important;
+  background-color: antiquewhite;
+}
+.index-con{
+  background-color: bisque;
+  height: 100%;
+  width: 100%;
+}
+
+.swipe-index-img{
+  height: 100%;
+  width: 100%;
+}
+.index-container{
+  height: 100%;
+  width: 100%;
+  margin-top: 40px;
+  margin-bottom: 60px;
+  overflow-y: scroll;
+}
+.page-cell{
+  margin-top: 42px;
+  margin-bottom: 60px;
+  height:calc(100% - 102px);
+  overflow-y: scroll;
+  width: 100%;
+}
+.mint-header{
+  position: fixed !important;
+  top: 0px;
+  left: 0px;
+  z-index: 200;
+  width: 100%;
+ }
+.mint-searchbar{
+  background-color: #f0f8ff !important;
+}
+.mint-searchbar-inner{
+  border: 1px solid cornflowerblue;
+}
+.page-search{
+  height: 56px;
+}
+.page-search .mint-search-list-warp{
+  margin-top: 60px;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+.page-search .mint-search-list-warp>.mint-cell{
+  border-bottom: 1px solid #eaeaea;
+  z-index: 2;
+  width: 96%;
+  margin: auto;
+}
+.summary-index{
+  margin-top: 42px;
+  margin-bottom: 60px;
+  height:calc(100% - 102px);
+  overflow-y: scroll;
+  width: 100%;
+}
+.summary-index-new{
+  height:calc(100% - 42px) !important;
+}
+

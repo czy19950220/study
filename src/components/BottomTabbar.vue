@@ -1,0 +1,76 @@
+<template>
+  <!--底部导航-->
+  <mt-tabbar style="position: fixed;left: 0px;bottom: 0px;">
+    <div @click="toWhere('/')" style="flex: 1" class="menu-click div-menu">
+      <mt-tab-item id="首页">
+        <img slot="icon" src="../assets/imgs/home.png">
+        首页
+      </mt-tab-item>
+    </div>
+    <div @click="toWhere('/Study/Cells')" style="flex: 1" class="div-menu">
+      <mt-tab-item id="学习">
+        <img slot="icon" src="../assets/imgs/books.png">
+        学习
+      </mt-tab-item>
+    </div>
+    <div style="flex: 1" class="div-menu"@click="toWhere('/Summary/SummaryCells')">
+      <mt-tab-item id="总结">
+        <img slot="icon" src="../assets/imgs/summary.png">
+        总结
+      </mt-tab-item>
+    </div>
+    <div style="flex: 1" class="div-menu">
+      <mt-tab-item id="我的">
+        <img slot="icon" src="../assets/imgs/everyme.png">
+        我的
+      </mt-tab-item>
+    </div>
+  </mt-tabbar>
+</template>
+
+<script>
+  export default {
+    name: "BottomTabbar",
+    watch:{
+      $route(to,from){
+        //console.log(to.path);
+        if (to.path.indexOf('Study') >= 0) {
+          //console.log(1);
+          $(".div-menu").eq(1).addClass("menu-click").siblings().removeClass("menu-click");
+        }
+      }
+    },
+    methods: {
+      //设置跳转路由
+      toWhere(where) {
+        this.$router.push(where)
+        //console.log(where)
+      },
+      //添加底部导航点击事件
+      addClass() {
+        $(".div-menu").click(function () {
+          //改变选中时候的选项框的样式，移除其他几个选项的样式
+          $(this).addClass("menu-click").siblings().removeClass("menu-click");
+        });
+      },
+      selectMenu(path){
+        if (this.$route.path.indexOf('Study') >= 0){
+          $(".div-menu").eq(1).addClass("menu-click").siblings().removeClass("menu-click");
+        }else if (this.$route.path.indexOf('Summary') >= 0){
+          $(".div-menu").eq(2).addClass("menu-click").siblings().removeClass("menu-click");
+        }else {
+          $(".div-menu").eq(0).addClass("menu-click").siblings().removeClass("menu-click");
+        }
+      }
+    },
+    mounted() {
+      this.addClass();
+      this.selectMenu('Study',1);
+      console.log(this.$route.path)
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>
