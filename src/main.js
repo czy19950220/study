@@ -17,6 +17,7 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueFroala from 'vue-froala-wysiwyg';
 import Mui from 'vue-awesome-mui';
+import 'vue-awesome-mui/mui/dist/css/mui.css'
 import VueQriously from 'vue-qriously';//二维码
 
 // mount with global

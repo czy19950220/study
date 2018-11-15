@@ -31,10 +31,6 @@ h1{
   height: 100%;
  /* overflow-y: scroll;*/
 }
-.menu-click{
-  background-color: #eaeaea;
-  color: #26a2ff;
-}
 .swipe-index{
   height: 200px !important;
   background-color: antiquewhite;

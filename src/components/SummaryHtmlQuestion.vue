@@ -88,32 +88,33 @@
           return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
         };
       },
-      //加载内容，前期测试使用
-      loadAll() {
+      //加载内容
+      loadQuestion() {
+        //获取该页面需要的json文件
+        var stat_time;
+        $.ajax({
+          url : this.GLOBAL.htmlJson,
+          datatype: "json",
+          async : false,
+          data :{},
+          success : function(result) {
+            stat_time=result;
+          }
+        });
+        //console.log(JSON.stringify(stat_time));
+        //默认是第一个问题
+        this.HtmlQuestion=stat_time.result[0];
+        //循环加入title
+        for (var i=0;i<stat_time.result.length;i++){
+          //往输入提示框中push
+          this.restaurants.push({"title":stat_time.result[i].title})
+        }
+        //真正的全部需要的数据
+        this.allData=stat_time.result;
       },
     },
     mounted() {
-      //获取该页面需要的json文件
-      var stat_time;
-      $.ajax({
-        url : this.GLOBAL.htmlJson,
-        datatype: "json",
-        async : false,
-        data :{},
-        success : function(result) {
-          stat_time=result;
-        }
-      });
-      //console.log(JSON.stringify(stat_time));
-      //默认是第一个问题
-      this.HtmlQuestion=stat_time.result[0];
-      //循环加入title
-      for (var i=0;i<stat_time.result.length;i++){
-        //往输入提示框中push
-        this.restaurants.push({"title":stat_time.result[i].title})
-      }
-      //真正的全部需要的数据
-      this.allData=stat_time.result;
+      this.loadQuestion();
     }
   }
 </script>

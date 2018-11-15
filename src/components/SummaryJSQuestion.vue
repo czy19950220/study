@@ -238,6 +238,12 @@
         });
       var str = decodeURI(this.$route.hash)
       str = (str == '' || str == '#') ? ('路径1') : (str.replace("#", ""));//通过获取的hash获取相应的页面内容
+      let that=this;
+      this.$mui.back = function(){
+        that.$mui.plusReady(function() {
+          plus.runtime.quit();
+        });
+      }
     },
     created() {
       //console.log(JsJson)

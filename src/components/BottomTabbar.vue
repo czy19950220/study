@@ -1,7 +1,7 @@
 <template>
   <!--底部导航-->
   <mt-tabbar style="position: fixed;left: 0px;bottom: 0px;">
-    <div @click="toWhere('/')" style="flex: 1" class="menu-click div-menu">
+    <div @click="toWhere('/')" style="flex: 1" class="menu-click-my div-menu">
       <mt-tab-item id="首页">
         <img slot="icon" src="../assets/imgs/home.png">
         首页
@@ -36,7 +36,7 @@
         //console.log(to.path);
         if (to.path.indexOf('Study') >= 0) {
           //console.log(1);
-          $(".div-menu").eq(1).addClass("menu-click").siblings().removeClass("menu-click");
+          $(".div-menu").eq(1).addClass("menu-click-my").siblings().removeClass("menu-click-my");
         }
       }
     },
@@ -50,16 +50,16 @@
       addClass() {
         $(".div-menu").click(function () {
           //改变选中时候的选项框的样式，移除其他几个选项的样式
-          $(this).addClass("menu-click").siblings().removeClass("menu-click");
+          $(this).addClass("menu-click-my").siblings().removeClass("menu-click-my");
         });
       },
       selectMenu(path){
         if (this.$route.path.indexOf('Study') >= 0){
-          $(".div-menu").eq(1).addClass("menu-click").siblings().removeClass("menu-click");
+          $(".div-menu").eq(1).addClass("menu-click-my").siblings().removeClass("menu-click-my");
         }else if (this.$route.path.indexOf('Summary') >= 0){
-          $(".div-menu").eq(2).addClass("menu-click").siblings().removeClass("menu-click");
+          $(".div-menu").eq(2).addClass("menu-click-my").siblings().removeClass("menu-click-my");
         }else {
-          $(".div-menu").eq(0).addClass("menu-click").siblings().removeClass("menu-click");
+          $(".div-menu").eq(0).addClass("menu-click-my").siblings().removeClass("menu-click-my");
         }
       }
     },
@@ -72,5 +72,14 @@
 </script>
 
 <style scoped>
-
+  .div-menu a{
+    color: #2c3e50;
+  }
+  .menu-click-my{
+    background-color: #eaeaea;
+    color: #26a2ff;
+  }
+  .menu-click-my a{
+    color: #26a2ff ;
+  }
 </style>

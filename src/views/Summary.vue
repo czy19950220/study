@@ -2,8 +2,8 @@
   <!--学习过的一些东西-->
   <div class="container-my">
     <mt-header :title="title">
-      <router-link to="/Summary" slot="left" v-show="showBack">
-        <mt-button icon="back">返回</mt-button>
+      <router-link to="/Summary" slot="left" v-if="showBack">
+        <mt-button icon="back" class="mui-action-back">返回</mt-button>
       </router-link>
     </mt-header>
     <div class="summary-index"><router-view></router-view></div>
@@ -50,6 +50,12 @@
     mounted(){
       this.titleOfPath(this.$route.path.toLowerCase());
       //console.log(this.$route.path.toLowerCase());
+      this.$mui.init({
+        swipeBack:true, //启用右滑关闭功能
+        keyEventBind: {
+          backbutton: false  //关闭back按键监听
+        }
+      });
     },
 
   }

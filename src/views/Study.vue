@@ -55,6 +55,15 @@
     },
     mounted(){
       this.titleOfPath(this.$route.path.toLowerCase());
+      this.$mui.init({
+        swipeBack:false, //右滑关闭功能
+      });
+      let that=this;
+      this.$mui.back = function(){
+        that.$mui.plusReady(function() {
+          plus.runtime.quit();
+        });
+      }
     },
     created(){
 
