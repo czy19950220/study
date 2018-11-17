@@ -167,6 +167,7 @@
         }).catch(error => {
           console.log(error);
         });
+        console.log(html)
       },
       //重新设置HTML代码来切换内容
       resetHtml(x) {

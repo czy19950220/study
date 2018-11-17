@@ -3,7 +3,6 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-
 import 'babel-polyfill'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -19,6 +18,7 @@ import VueFroala from 'vue-froala-wysiwyg';
 import Mui from 'vue-awesome-mui';
 import 'vue-awesome-mui/mui/dist/css/mui.css'
 import VueQriously from 'vue-qriously';//二维码
+import FastClick from 'fastclick'
 
 // mount with global
 //vue-froala-wysiwyg
@@ -48,6 +48,12 @@ Vue.use(Mui);
 Vue.use(VueQriously);
 
 Vue.config.productionTip = false
+
+if ('addEventListener' in document) {
+  document.addEventListener('DOMContentLoaded', function() {
+    FastClick.attach(document.body);
+  }, false);
+}
 
 /* eslint-disable no-new */
 new Vue({

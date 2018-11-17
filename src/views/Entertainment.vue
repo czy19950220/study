@@ -1,5 +1,4 @@
 <template>
-  <!--总结过的一些东西-->
   <div class="container-my">
     <mt-header :title="title">
       <router-link to="/Summary" slot="left" v-if="showBack">
@@ -17,7 +16,7 @@
     components:{
       BottomTabbar
     },
-    name: "Summary",
+    name: "Entertainment",
     data(){
       return{
         title:'总结',
@@ -41,27 +40,31 @@
         }else if (path.indexOf('summaryjsquestion') >= 0) {
           this.title='JS的一些问题总结'
         } else {
-          this.title='总结';
+          this.title='娱乐';
           this.showBack=false;
           $(".summary-index").removeClass("summary-index-new");
         }
       },
+      quit(){
+        let that=this;
+        this.$mui.back = function() {
+          var btn = ["确定", "取消"];
+          that.$mui.confirm('确认关闭当前窗口？', 'Hello MUI', btn, function(e) {
+            if(e.index == 0) {
+              plus.runtime.quit();
+            }
+          });
+        };
+      }
     },
     mounted(){
       this.titleOfPath(this.$route.path.toLowerCase());
       //console.log(this.$route.path.toLowerCase());
-      this.$mui.init({
-        swipeBack:true, //启用右滑关闭功能
-        keyEventBind: {
-          backbutton: false  //关闭back按键监听
-        }
-      });
+      this.quit();
     },
-
   }
 </script>
 
 <style scoped>
 
 </style>
-

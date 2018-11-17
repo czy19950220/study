@@ -1,5 +1,5 @@
 <template>
-  <!--学习页面cells-->
+  <!--总结页面cells-->
   <div>
     <mt-cell
       title="HTML总结"
