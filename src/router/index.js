@@ -103,6 +103,10 @@ export default new Router({
           path: 'NovelBookshelf',
           name: 'NovelBookshelf',
           component : resolve => require(['@/components/NovelBookshelf.vue'],resolve)
+        },{//搜索书籍
+          path: 'NovelSearch',
+          name: 'NovelSearch',
+          component : resolve => require(['@/components/NovelSearch.vue'],resolve)
         }
       ]
     }

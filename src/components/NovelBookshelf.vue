@@ -20,7 +20,8 @@
         console.log(1)
       },
       toSearch(){
-        console.log(2)
+        /*/Novel/NovelSearch*/
+        this.$router.push('/Novel/NovelSearch')
       }
     }
   }

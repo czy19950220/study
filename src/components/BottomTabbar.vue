@@ -1,5 +1,5 @@
 <template>
-  <!--底部导航-->
+  <!--底部导航.-->
   <mt-tabbar style="position: fixed;left: 0px;bottom: 0px;">
     <div @click="toWhere('/')" style="flex: 1" class="menu-click-my div-menu">
       <mt-tab-item id="首页">
