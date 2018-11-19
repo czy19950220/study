@@ -45,17 +45,12 @@
             <mt-button type="danger" @click="loadPrev(-1)">上一章</mt-button>
           </mt-tab-item>
           <mt-tab-item id="订单">
-            <mt-button type="primary" @click="openPicker">设置</mt-button>
+            <mt-button type="primary" @click="sheZhi">设置</mt-button>
           </mt-tab-item>
           <mt-tab-item id="发现">
             <mt-button type="danger" @click="loadPrev(1)">下一章</mt-button>
           </mt-tab-item>
         </mt-tabbar>
-        <mt-datetime-picker
-          ref="picker"
-          type="time"
-          v-model="pickerValue">
-        </mt-datetime-picker>
       </div>
     </vue-drawer-layout>
 
@@ -66,8 +61,8 @@
   import axios from 'axios';
   import {Toast} from 'mint-ui';
   import {mapGetters, mapActions} from 'vuex'
-
   export default {
+
     name: "NovelRead",
     data() {
       return {
@@ -87,8 +82,12 @@
       ])
     },
     methods: {
-      openPicker(){//设置弹框
-        this.$refs.picker.open();
+      sheZhi(){//不想写设置了，凑合看吧
+        Toast({
+          message: '不想写设置了，凑合看吧...',
+          position: 'bottom',
+          duration: 2000
+        });
       },
       openFullScreen() {//加载动画
         this.fullscreenLoading = true;
@@ -170,6 +169,7 @@
                 newText.push(arr[i])
               }
               this.bodyText=newText;
+              console.log(this.bodyText)
             }
           }
         }).catch((err) => {
@@ -203,37 +203,40 @@
           //console.log(document.getElementById("book").scrollTop)
           document.getElementById("book").scrollTop=0;
         }
+      },
+      getNovel(){
+        axios.get('/api/toc?view=summary&book=' + this.bookDetail).then((response) => {
+          //console.log(response.data)
+          if (response.status == 200) {
+            let data = response.data;
+            let sourceId = data.length > 1 ? data[1]._id : data[0]._id;
+            for (let item of data) {
+              if (item.source === 'my176') {
+                sourceId = item._id;
+                break;
+              }
+            }
+            this.getLink(sourceId);
+          }
+          Toast({
+            message: '加载成功',
+            position: 'bottom',
+            duration: 2000
+          });
+        }).catch((err) => {
+          Toast({
+            message: '资源没找到...',
+            position: 'bottom',
+            duration: 2000
+          });
+        });
       }
     },
     created() {
-      axios.get('/api/toc?view=summary&book=' + this.bookDetail).then((response) => {
-        //console.log(response.data)
-        if (response.status == 200) {
-          let data = response.data;
-          let sourceId = data.length > 1 ? data[1]._id : data[0]._id;
-          for (let item of data) {
-            if (item.source === 'my176') {
-              sourceId = item._id;
-              break;
-            }
-          }
-          this.getLink(sourceId);
-        }
-        Toast({
-          message: '加载成功',
-          position: 'bottom',
-          duration: 2000
-        });
-      }).catch((err) => {
-        Toast({
-          message: '资源没找到...',
-          position: 'bottom',
-          duration: 2000
-        });
-      });
+
     },
     mounted(){
-
+      this.getNovel();
     }
   }
 </script>

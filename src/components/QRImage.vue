@@ -2,7 +2,6 @@
   <div style="margin-top: 42px;height: calc(100% - 42px);overflow-y: scroll">
     <!--vue-qriously的动态二维码生成，不支持中文，不需要自己再写方法实现动态二维码-->
     <el-input v-model="QRValue" style="width: 70%;margin-left: 15%" placeholder="不支持输入中文">
-      <template slot="prepend">vue-qriously的</template>
     </el-input>
     <br/>
     <br/>
@@ -10,7 +9,6 @@
     <br/>
     <!--qrcodejs2的动态二维码生成，支持中文，需要自己添加一些方法来实现动态生成二维码-->
     <el-input v-model="QRValue2" placeholder="支持输入中文" style="width: 70%;margin-left: 15%" @keyup.native="qrcode()">
-      <template slot="prepend">qrcodejs2的</template>
     </el-input>
     <br/>
     <br/>

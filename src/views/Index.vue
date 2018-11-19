@@ -34,6 +34,7 @@
 </template>
 
 <script>
+  import axios from 'axios';
   import IndexMain from './../components/IndexMain'
   import './../assets/css/index.css'
   export default {
@@ -71,6 +72,7 @@
       }
     },
     created(){
+      //http://api.zhuishushenqi.com/book/fuzzy-search?query=大王&start=0&limit=20
       //console.log(this.drawer)
     }
   }

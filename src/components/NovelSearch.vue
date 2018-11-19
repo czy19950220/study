@@ -66,6 +66,7 @@
       getSearch() {
         let search = `/api/book/fuzzy-search?query=${this.query}&start=0&limit=20`;
         axios.get(search).then((res) => {
+          console.log(search)
           //console.log(res.data.books);//打印查看得到的结果
           let bookList = res.data.books;
           if (bookList.length == 0) {
