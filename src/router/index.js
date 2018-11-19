@@ -111,6 +111,10 @@ export default new Router({
           path: 'NovelDetail',
           name: 'NovelDetail',
           component : resolve => require(['@/components/NovelDetail.vue'],resolve)
+        },{//阅读小说
+          path: 'NovelRead',
+          name: 'NovelRead',
+          component : resolve => require(['@/components/NovelRead.vue'],resolve)
         }
       ]
     }

@@ -59,7 +59,7 @@
 
       },
       readBook(){
-
+        this.$router.push('/Novel/NovelRead')
       },
       //转化封面url为实际url
       url2Real(url) {
@@ -88,40 +88,10 @@
           this.book = res.data;
           this.book.cover = this.book.cover ? this.url2Real(this.book.cover) : '../assets/imgs/err.png';
           this.book.wordCount = this.book.wordCount ? this.wordCount2Str(this.book.wordCount) :0;
+          //console.log('this.book')
           //console.log(this.book)
         });
-        axios.get('/api/toc?view=summary&book='+this.bookDetail).then((response) => {
-          console.log(response.data)
-          if (response.status == 200) {
-            let data = response.data ;
-            let sourceId = data.length > 1 ? data[1]._id : data[0]._id;
-            for (let item of data) {
-              if (item.source === 'my176') {
-                sourceId = item._id;
-                break ;
-              }
-            }
-            let chapterList = response.data;
-            let _this=this;
-            _this.chapterList =chapterList.chapters;//章节列表.
-            _this.chaTitle = _this.chapterList[_this.page].title;
-            _this.getText(_this.chapterList);
-            axios.get('/api/toc/'+sourceId+'?view=chapters').then((response) => {
-              if (response.status == 200) {
-                console.log(response.data.chapters[1308].link);
-                let xx=response.data.chapters[1308].link;
-                this.$axios.get(`/chapter/`+`${encodeURIComponent(chapters[_this.page].link)}`+`?k=2124b73d7e2e1945&t=1468223717)`).then((response) => {
-                  console.log(response.data)
-                })
-              }
-            }).catch((err) => {
-              let instance = Toast('寻找资源失败');
-              setTimeout(() => {
-                instance.close();
-              }, 2000);
-            });
-          }
-        });
+
       }
     },
     created() {
