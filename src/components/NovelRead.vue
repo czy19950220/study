@@ -98,7 +98,7 @@
       toChapter(title,index){//换章节
         this.page=(this.pageVal-1)*100+index;
         //console.log((this.page+1)+'章');
-        this.getText(this.chapterList);
+        this.getText2(this.chapterList);
         this.title=title;
         this.$refs.drawerLayout.toggle(false);
         document.getElementById("book").scrollTop=0;
@@ -128,7 +128,7 @@
             this.title = this.chapterList[this.page].title;
             //console.log(this.chapterList);
             this.chapterListNew=this.chapterList.slice(0,100);
-            this.getText(this.chapterList);
+            this.getText2(this.chapterList);
             //console.log(this.chapterList)
           }
         }).catch((err) => {
@@ -140,7 +140,7 @@
           });
         })
       },
-      getText(chapters) {
+      getText(chapters) {//http://chapter2.zhuishushenqi.com
         axios.get(`/chapter/` + `${encodeURIComponent(chapters[this.page].link)}` + `?k=2124b73d7e2e1945&t=1468223717)`).then((response) => {
           if (response.status == 200) {
             let data = response.data;
@@ -169,9 +169,37 @@
                 newText.push(arr[i])
               }
               this.bodyText=newText;
-              console.log(this.bodyText)
+              //console.log(this.bodyText)
             }
           }
+        }).catch((err) => {
+          Toast({
+            message: '资源没找到',
+            position: 'bottom',
+            duration: 2000
+          });
+        })
+      },
+      getText2(chapters) {//http://chapter2.zhuishushenqi.com
+        let params={link:(encodeURIComponent(chapters[this.page].link))};
+        let url=`${this.GLOBAL.serverIp}myNovel`
+        axios.get(url,{
+          params: {
+            link:encodeURIComponent(chapters[this.page].link)
+          }
+        }).then((response) => {
+          //console.log(JSON.parse(response.data.response))
+          let chapter=JSON.parse(response.data.response).chapter;//真正的chapter
+          //console.log(chapter.body)
+          //把回车换成br标签
+          this.bodyText = chapter.body.split("\n").join("<br>");//.split("\n").join("<br>")
+          var arr = this.bodyText.split('<br>');
+          let newText=[];//用来存储新的text文本
+          for(var i=0;i<arr.length;i++){
+            newText.push(arr[i])
+          }
+          this.bodyText=newText;
+
         }).catch((err) => {
           Toast({
             message: '资源没找到',
@@ -198,7 +226,7 @@
             duration: 2000
           });
         }else {
-          this.getText(this.chapterList);
+          this.getText2(this.chapterList);
           this.title=this.chapterList[this.page].title;
           //console.log(document.getElementById("book").scrollTop)
           document.getElementById("book").scrollTop=0;
