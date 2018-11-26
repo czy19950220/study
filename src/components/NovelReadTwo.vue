@@ -38,8 +38,21 @@
         </mt-header>
         <div class="book-read-main" id="book" v-loading.fullscreen.lock="fullscreenLoading">
           <!--文章-->
-          <pre class="pre-con" v-for="text in bodyText" v-html="text"></pre>
+          <div class="page-loadmore">
+            <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
+              <mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" ref="loadmore">
+                <pre class="pre-con" v-for="text in bodyText" v-html="text"></pre>
+                <div slot="bottom" class="mint-loadmore-bottom">
+                  <span v-show="bottomStatus !== 'loading'" :class="{ 'is-rotate': bottomStatus === 'drop' }">↑</span>
+                  <span v-show="bottomStatus === 'loading'">
+                    <mt-spinner type="snake"></mt-spinner>
+                  </span>
+                </div>
+              </mt-loadmore>
+            </div>
+          </div>
         </div>
+        <!--底部切换页面-->
         <mt-tabbar>
           <mt-tab-item id="外卖">
             <mt-button type="danger" @click="loadPrev(-1)">上一章</mt-button>
@@ -61,9 +74,13 @@
   import {Toast} from 'mint-ui';
   import {mapGetters, mapActions} from 'vuex'
   export default {
-    name: "NovelRead",
+    name: "NovelReadTwo",
     data() {
       return {
+        firstLoad:true,
+        allLoaded: false,
+        bottomStatus: '',
+        wrapperHeight: 0,
         pickerValue:"",
         fullscreenLoading: false,//加载动画
         title: '',
@@ -80,6 +97,28 @@
       ])
     },
     methods: {
+      handleBottomChange(status) {
+        this.bottomStatus = status;
+      },
+      loadBottom() {
+        if (this.firstLoad){
+          setTimeout(() => {
+            //this.allLoaded = true;//判断是否全部加载完毕
+            this.loadPrev(-1);
+            this.$refs.loadmore.onBottomLoaded();
+            this.firstLoad=false;
+          }, 800);
+          setTimeout(() => {
+            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0;
+          }, 801);
+        } else {
+          setTimeout(() => {
+            //this.allLoaded = true;//判断是否全部加载完毕
+            this.loadPrev(1);
+            this.$refs.loadmore.onBottomLoaded();
+          }, 200);
+        }
+      },
       sheZhi(){//不想写设置了，凑合看吧
         Toast({
           message: '不想写设置了，凑合看吧...',
@@ -91,9 +130,10 @@
         this.fullscreenLoading = true;
         setTimeout(() => {
           this.fullscreenLoading = false;
-        }, 100);
+        }, 500);
       },
       toChapter(title,index){//换章节
+        this.allLoaded = false;//判断是否全部加载完毕
         this.page=(this.pageVal-1)*100+index;
         //console.log((this.page+1)+'章');
         this.getText2(this.chapterList);
@@ -216,6 +256,7 @@
             position: 'bottom',
             duration: 2000
           });
+          this.allLoaded = false;//判断是否全部加载完毕
         }else if (this.page>=this.chapterList.length){
           this.page =this.chapterList.length-1;
           Toast({
@@ -223,11 +264,16 @@
             position: 'bottom',
             duration: 2000
           });
+          this.allLoaded = true;//判断是否全部加载完毕
         }else {
           this.getText2(this.chapterList);
           this.title=this.chapterList[this.page].title;
           //console.log(document.getElementById("book").scrollTop)
-          document.getElementById("book").scrollTop=0;
+          //document.getElementById("book").scrollTop=0;
+          document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+          setTimeout(() => {
+            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+          }, 100);
         }
       },
       getNovel(){
@@ -259,10 +305,11 @@
       }
     },
     created() {
-
+      this.getNovel();
     },
     mounted(){
-      this.getNovel();
+      //this.openFullScreen();
+      this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top -60;
     }
   }
 </script>
@@ -287,11 +334,11 @@
     overflow-y: scroll;
     overflow-x: hidden;
     margin-top: 40px;
-    padding: 10px 15px 0px;
     clear: both;
   }
 
   .pre-con {
+    padding: 0 10px;
     font-size: 16px;
     line-height: 1.5;
     color: #333;
@@ -315,5 +362,43 @@
   .mint-tabbar{
     background-color: #97d3ff;
   }
-
+  .page-loadmore{
+  }
+  .page-loadmore .mint-spinner {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .page-loadmore-desc {
+    text-align: center;
+    color: #666;
+    padding-bottom: 5px;
+  }
+  .page-loadmore-desc:last-of-type {
+    border-bottom: solid 1px #eee;
+  }
+  .page-loadmore-listitem {
+    height: 50px;
+    line-height: 50px;
+    border-bottom: solid 1px #eee;
+    text-align: center;
+  }
+  .page-loadmore-listitem:first-child {
+    border-top: solid 1px #eee;
+  }
+  .page-loadmore-wrapper {
+    overflow: scroll;
+  }
+  .mint-loadmore-bottom span {
+    display: inline-block;
+    -webkit-transition: .2s linear;
+    transition: .2s linear;
+    vertical-align: middle
+  }
+  .mint-loadmore-bottom span.is-rotate {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+  }
+  .page-loadmore-list{
+    padding-bottom: 20px;
+  }
 </style>

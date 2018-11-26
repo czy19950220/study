@@ -59,7 +59,7 @@
 
       },
       readBook(){
-        this.$router.push('/Novel/NovelRead')
+        this.$router.push('/Novel/NovelReadTwo')
       },
       //转化封面url为实际url
       url2Real(url) {
