@@ -101,7 +101,7 @@
         this.bottomStatus = status;
       },
       loadBottom() {
-        if (this.firstLoad){1
+        if (this.firstLoad){
           setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
             this.loadPrev(-1);
