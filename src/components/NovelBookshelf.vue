@@ -7,9 +7,9 @@
       <mt-button icon="search" slot="right" @click="toSearch()" class="novel-search"></mt-button>
     </mt-header>
     <div class="novel-bookshelf-main">
-      <pre style="text-align: left">
+      <!--<pre style="text-align: left">
         {{txt}}
-      </pre>
+      </pre>-->
     </div>
   </div>
 </template>

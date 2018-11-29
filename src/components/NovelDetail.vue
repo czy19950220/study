@@ -82,16 +82,6 @@
         }
         return wordCount + '字';
       },
-      getBook(){
-        let search = `/api/book/${this.bookDetail}`;
-        axios.get(search).then((res) => {
-          this.book = res.data;
-          this.book.cover = this.book.cover ? this.url2Real(this.book.cover) : '../assets/imgs/err.png';
-          this.book.wordCount = this.book.wordCount ? this.wordCount2Str(this.book.wordCount) :0;
-          //console.log('this.book')
-          //console.log(this.book)
-        });
-      },
       getBook2(){//使用MUI生成APP后的使用
         let that=this;
         this.$mui.ajax({

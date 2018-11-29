@@ -5,13 +5,13 @@
       title="小说"
       to="/Novel/NovelBookshelf"
       is-link
-      value="">
+      value="制作成APP后用这个">
     </mt-cell>
     <mt-cell
       title="小说"
       to="/NovelDev/NovelBookshelfDev"
       is-link
-      value="本地dev运行">
+      value="本地DEV运行用这个">
     </mt-cell>
   </div>
 </template>

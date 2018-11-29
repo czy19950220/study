@@ -132,16 +132,6 @@
           this.fullscreenLoading = false;
         }, 500);
       },
-      toChapter(title,index){//换章节
-        this.allLoaded = false;//判断是否全部加载完毕
-        this.page=(this.pageVal-1)*100+index;
-        //console.log((this.page+1)+'章');
-        this.getText2(this.chapterList);
-        this.title=title;
-        this.$refs.drawerLayout.toggle(false);
-        document.getElementById("book").scrollTop=0;
-        //this.openFullScreen();
-      },
       toChapterMui(title,index){//换章节
         this.allLoaded = false;//判断是否全部加载完毕
         this.page=(this.pageVal-1)*100+index;
@@ -164,29 +154,6 @@
       },
       more(){//点击打开右侧框
         this.$refs.drawerLayout.toggle();
-      },
-      getLink(sourceId) {//获取章节和链接
-        let url = '/api/toc/' + sourceId + '?view=chapters';
-        axios.get(url).then((response) => {
-          //console.log(sourceId)
-          if (response.status == 200) {
-            let chapterList = response.data;
-            this.chapterList = chapterList.chapters;//章节列表
-            //this.chaTitle = this.chapterList[this.page].title;
-            this.title = this.chapterList[this.page].title;
-            //console.log(this.chapterList);
-            this.chapterListNew=this.chapterList.slice(0,100);
-            this.getText2(this.chapterList);
-            //console.log(this.chapterList)
-          }
-        }).catch((err) => {
-          console.log(err);
-          Toast({
-            message: '资源没找到...',
-            position: 'bottom',
-            duration: 2000
-          });
-        })
       },
       getLinkMui(sourceId) {//获取章节和链接
         let that=this;
@@ -216,74 +183,6 @@
             that.$mui.toast('请求失败');
           }
         });
-      },
-      getText(chapters) {//http://chapter2.zhuishushenqi.com
-        axios.get(`/chapter/` + `${encodeURIComponent(chapters[this.page].link)}` + `?k=2124b73d7e2e1945&t=1468223717)`).then((response) => {
-          if (response.status == 200) {
-            let data = response.data;
-            if (data.ok) {
-              if (data.chapter.body.indexOf('下载最新的追书神器app阅读本作') > -1) {
-                Toast({
-                  message: '资源丢失了...',
-                  position: 'bottom',
-                  duration: 2000
-                });
-                return;
-              }
-              if (data.chapter.body.indexOf('请安装最新版追书') > -1) {
-                Toast({
-                  message: '资源丢失了...',
-                  position: 'bottom',
-                  duration: 2000
-                });
-                return;
-              }
-              //把回车换成br标签
-              this.bodyText = data.chapter.body.split("\n").join("<br>");//.split("\n").join("<br>")
-              var arr = this.bodyText.split('<br>');
-              let newText=[];//用来存储新的text文本
-              for(var i=0;i<arr.length;i++){
-                newText.push(arr[i])
-              }
-              this.bodyText=newText;
-              //console.log(this.bodyText)
-            }
-          }
-        }).catch((err) => {
-          Toast({
-            message: '资源没找到',
-            position: 'bottom',
-            duration: 2000
-          });
-        })
-      },
-      getText2(chapters) {//http://chapter2.zhuishushenqi.com
-        let params={link:(encodeURIComponent(chapters[this.page].link))};
-        let url=`${this.GLOBAL.serverIp}myNovel`
-        axios.get(url,{
-          params: {
-            link:encodeURIComponent(chapters[this.page].link)
-          }
-        }).then((response) => {
-          //console.log(JSON.parse(response.data.response))
-          let chapter=JSON.parse(response.data.response).chapter;//真正的chapter
-          //console.log(chapter.body)
-          //把回车换成br标签
-          this.bodyText = chapter.body.split("\n").join("<br>");//.split("\n").join("<br>")
-          var arr = this.bodyText.split('<br>');
-          let newText=[];//用来存储新的text文本
-          for(var i=0;i<arr.length;i++){
-            newText.push(arr[i])
-          }
-          this.bodyText=newText;
-
-        }).catch((err) => {
-          Toast({
-            message: '资源没找到',
-            position: 'bottom',
-            duration: 2000
-          });
-        })
       },
       getTextMui(chapters) {//http://chapter2.zhuishushenqi.com
         let that=this;
@@ -335,36 +234,6 @@
           }
         });
       },
-      loadPrev(num){
-        //this.openFullScreen();
-        this.page =this.page+num;
-        if (this.page<0){
-          this.page =0;
-          Toast({
-            message: '已经是第一章了...',
-            position: 'bottom',
-            duration: 2000
-          });
-          this.allLoaded = false;//判断是否全部加载完毕
-        }else if (this.page>=this.chapterList.length){
-          this.page =this.chapterList.length-1;
-          Toast({
-            message: '已经是最新章了...',
-            position: 'bottom',
-            duration: 2000
-          });
-          this.allLoaded = true;//判断是否全部加载完毕
-        }else {
-          this.getText2(this.chapterList);
-          this.title=this.chapterList[this.page].title;
-          //console.log(document.getElementById("book").scrollTop)
-          //document.getElementById("book").scrollTop=0;
-          document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
-          setTimeout(() => {
-            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
-          }, 100);
-        }
-      },
       loadPrevMui(num){
         //this.openFullScreen();
         this.page =this.page+num;
@@ -394,33 +263,6 @@
             document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
           }, 100);
         }
-      },
-      getNovel(){
-        axios.get('/api/toc?view=summary&book=' + this.bookDetail).then((response) => {
-          //console.log(response.data)
-          if (response.status == 200) {
-            let data = response.data;
-            let sourceId = data.length > 1 ? data[1]._id : data[0]._id;
-            for (let item of data) {
-              if (item.source === 'my176') {
-                sourceId = item._id;
-                break;
-              }
-            }
-            this.getLink(sourceId);
-          }
-          Toast({
-            message: '加载成功',
-            position: 'bottom',
-            duration: 2000
-          });
-        }).catch((err) => {
-          Toast({
-            message: '资源没找到...',
-            position: 'bottom',
-            duration: 2000
-          });
-        });
       },
       getNovelMui(){
         let that=this;
