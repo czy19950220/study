@@ -1,7 +1,7 @@
 <template>
   <div class="book-detail">
     <mt-header :title='`${book.title}`'>
-      <router-link to="/Novel/NovelSearch" slot="left">
+      <router-link to="/NovelDev/NovelSearchDev" slot="left">
         <mt-button icon="back">返回</mt-button>
       </router-link>
     </mt-header>
@@ -31,7 +31,7 @@
   import {mapGetters, mapActions} from 'vuex'
 
   export default {
-    name: "NovelDetail",
+    name: "NovelDetailDev",
     data() {
       return {
         book: {},
@@ -59,7 +59,7 @@
 
       },
       readBook(){
-        this.$router.push('/Novel/NovelReadTwo')
+        this.$router.push('/NovelDev/NovelReadTwoDev')
       },
       //转化封面url为实际url
       url2Real(url) {
@@ -91,35 +91,10 @@
           //console.log('this.book')
           //console.log(this.book)
         });
-      },
-      getBook2(){//使用MUI生成APP后的使用
-        let that=this;
-        this.$mui.ajax({
-          url : `http://api.zhuishushenqi.com/book/${that.bookDetail}`,
-          data: {},
-          async: true,
-          dataType:'json',//服务器返回json格式数据
-          crossDomain: true, //强制使用5+跨域
-          type:'get',//HTTP请求类型
-          timeout:10000,//超时时间设置为10秒；
-          scriptCharset:'utf-8',
-          headers:{'Content-Type':'application/json'},
-          success:function(data){
-            that.$mui.toast('请求成功');
-            that.book = data;
-            that.book.cover = that.book.cover ? that.url2Real(that.book.cover) : '../assets/imgs/err.png';
-            that.book.wordCount = that.book.wordCount ? that.wordCount2Str(that.book.wordCount) :0;
-          },
-          error:function(xhr,type,errorThrown){
-            //异常处理；
-            console.log(type);
-            that.$mui.toast('请求失败');
-          }
-        });
       }
     },
     created() {
-      this.getBook2();
+      this.getBook();
     }
   }
 </script>

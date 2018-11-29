@@ -2,19 +2,19 @@
   <!--小说搜索-->
   <div class="book-search">
     <mt-header title="搜索小说">
-      <router-link to="/Novel/NovelBookshelf" slot="left">
+      <router-link to="/NovelDev/NovelBookshelfDev" slot="left">
         <mt-button icon="back">返回</mt-button>
       </router-link>
     </mt-header>
     <div class="book-search-main">
       <el-row style="margin-top: 10px">
         <el-input
-          @keyup.enter.native="getSearch2"
+          @keyup.enter.native="getSearch"
           style="width: 60%"
           placeholder="请输入内容"
           v-model="query">
         </el-input>
-        <el-button type="primary" @click="getSearch3()">搜索</el-button>
+        <el-button type="primary" @click="getSearch()">搜索</el-button>
       </el-row>
       <div class="search-book-result">
         <div class="result-detail" v-for="result in searchResult" @click="toBook(result)">
@@ -39,7 +39,7 @@
   import {mapGetters, mapActions} from 'vuex'
 
   export default {
-    name: "NovelSearch",
+    name: "NovelSearchDev",
     data() {
       return {
         query: '大王',
@@ -81,103 +81,19 @@
               item.cover = item.cover ? this.url2Real(item.cover) : '../assets/imgs/err.png';
               item.shortIntro = item.shortIntro.length > 30 ? item.shortIntro.substr(0, 30) + "....." : item.shortIntro;
             });
-            console.log(bookList)
+            //console.log(bookList)
             this.searchResult = res.data.books;
           }
 
         });
       },
-      getSearch2() {//连接到后台nodejs的方法
-        let search = `/api/book/fuzzy-search?query=${this.query}&start=0&limit=20`;
-        //let params = {querySearchName:this.query};
-        let url=`${this.GLOBAL.serverIp}myNovel/search`;
-        axios.get(url,{
-          params: {
-            querySearchName:this.query
-          }
-        }).then((res) => {
-          //console.log(res.data.body);//打印查看得到的结果
-          let bookList =JSON.parse(res.data.body) ;
-          //console.log(bookList.books)
-          //let books=JSON.parse(bookList);
-
-          if (bookList.books.length == 0) {
-            let instance = Toast('没找到');
-            setTimeout(() => {
-              instance.close();
-            }, 2000);
-          } else {
-            bookList.books.map((item) => {
-              //图片比例140:200
-              item.cover = item.cover ? this.url2Real(item.cover) : '../assets/imgs/err.png';
-              item.shortIntro = item.shortIntro.length > 30 ? item.shortIntro.substr(0, 30) + "....." : item.shortIntro;
-            });
-            //console.log(bookList.books)
-            this.searchResult = bookList.books;
-          }
-
-        });
-      },
-      getSearch3() {//mui的方法,测试
-        let that=this;
-        this.$mui.ajax({
-          url : `http://api.zhuishushenqi.com/book/fuzzy-search?query=${that.query}&start=0&limit=20`,
-          data: {},
-          async: true,
-          dataType:'json',//服务器返回json格式数据
-          crossDomain: true, //强制使用5+跨域
-          type:'get',//HTTP请求类型
-          timeout:10000,//超时时间设置为10秒；
-          scriptCharset:'utf-8',
-          headers:{'Content-Type':'application/json'},
-          success:function(data){
-            that.$mui.toast('请求成功');
-            //alert(data)
-            let bookList =data;
-            //console.log('data')
-            //console.log(bookList)//{ok:true,total:1076,books:[{},{},{}]}
-            bookList.books.map((item) => {
-              //图片比例140:200
-              item.cover = item.cover ? that.url2Real(item.cover) : '../assets/imgs/err.png';
-              item.shortIntro = item.shortIntro.length > 30 ? item.shortIntro.substr(0, 30) + "....." : item.shortIntro;
-            });
-            //console.log(bookList)
-            //console.log(bookList.books)
-            that.searchResult = bookList.books;
-            /*if (bookList.books.length == 0) {
-              let instance = Toast('没找到');
-              setTimeout(() => {
-                instance.close();
-              }, 2000);
-            } else {
-              let instance = Toast('找到了');
-              setTimeout(() => {
-                instance.close();
-              }, 2000);
-              bookList.books.map((item) => {
-                //图片比例140:200
-                item.cover = item.cover ? this.url2Real(item.cover) : '../assets/imgs/err.png';
-                item.shortIntro = item.shortIntro.length > 30 ? item.shortIntro.substr(0, 30) + "....." : item.shortIntro;
-              });
-              console.log(bookList)
-              console.log(bookList.books)
-              that.searchResult = bookList.books;
-            }*/
-          },
-          error:function(xhr,type,errorThrown){
-            //异常处理；
-            console.log(type);
-            that.$mui.toast('请求失败');
-          }
-        });
-      },
       toBook(result) {
         this.bookDetailChange(result._id)
-        this.$router.push('/Novel/NovelDetail')
+        this.$router.push('/NovelDev/NovelDetailDev')
       }
     },
     mounted() {
-      this.getSearch3();
+      this.getSearch();
       //console.log(this.bookDetail)
     }
   }

@@ -5,6 +5,7 @@ import Study from '@/views/Study'
 import Summary from '@/views/Summary'
 import Entertainment from '@/views/Entertainment'
 import Novel from '@/views/Novel'
+import NovelDev from '@/views/NovelDev'
 
 Vue.use(Router)
 
@@ -119,6 +120,30 @@ export default new Router({
           path: 'NovelReadTwo',
           name: 'NovelReadTwo',
           component : resolve => require(['@/components/NovelReadTwo.vue'],resolve)
+        }
+      ]
+    },{//小说
+      path: '/NovelDev',
+      name: '/NovelDev',
+      component : NovelDev,
+      redirect:'/NovelDev/NovelBookshelfDev',
+      children:[
+        {//书架
+          path: 'NovelBookshelfDev',
+          name: 'NovelBookshelfDev',
+          component : resolve => require(['@/components/NovelBookshelflDev.vue'],resolve)
+        },{//搜索
+          path: 'NovelSearchDev',
+          name: 'NovelSearchDev',
+          component : resolve => require(['@/components/NovelSearchDev.vue'],resolve)
+        },{//书籍详情
+          path: 'NovelDetailDev',
+          name: 'NovelDetailDev',
+          component : resolve => require(['@/components/NovelDetailDev.vue'],resolve)
+        },{//书籍阅读
+          path: 'NovelReadTwoDev',
+          name: 'NovelReadTwoDev',
+          component : resolve => require(['@/components/NovelReadTwoDev.vue'],resolve)
         }
       ]
     }
