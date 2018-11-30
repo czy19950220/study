@@ -42,7 +42,7 @@
     name: "NovelSearch",
     data() {
       return {
-        query: '大王',
+        query: '我爱你',
         searchResult: [],
       }
     },
@@ -123,8 +123,14 @@
       }
     },
     mounted() {
-      this.getSearch3();
+      //this.getSearch3();
       //console.log(this.bookDetail)
+    },
+    created(){
+      let that=this;
+      this.$mui.back = function() {//从书架返回到娱乐页面
+        that.$router.push('/Novel/NovelBookshelf')
+      };
     }
   }
 </script>

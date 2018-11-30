@@ -81,7 +81,7 @@
               item.cover = item.cover ? this.url2Real(item.cover) : '../assets/imgs/err.png';
               item.shortIntro = item.shortIntro.length > 30 ? item.shortIntro.substr(0, 30) + "....." : item.shortIntro;
             });
-            //console.log(bookList)
+            console.log(bookList)
             this.searchResult = res.data.books;
           }
 

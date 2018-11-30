@@ -84,9 +84,9 @@
         pickerValue:"",
         fullscreenLoading: false,//加载动画
         title: '',
-        chapterList: [],//所有章节
+        chapterList: [],//所有章节```
         chapterListNew:[],//分页后章节
-        page: this.$route.params.page || 0, //章节
+        page: 0, //章节
         bodyText: '',
         pageVal:1,//分页第几页
       }
@@ -97,6 +97,38 @@
       ])
     },
     methods: {
+      bookReadIndex(){
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        //console.log(czyBooks.books.indexOf(this.bookAdd))
+        let length=czyBooks.books.length;
+        let that=this;
+        let ID=this.bookDetail;
+        let index=0;
+        for (let i = 0; i < length; i++) {
+          if (czyBooks.books[i]._id ==ID){//如果等于当前id就改变当前阅读章节
+            index=czyBooks.books[i].lastReadChapterIndex;
+          }
+        }
+        this.page=index;
+      },
+      changeBookshelf(){//改变书架存储的阅读至第几章
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        //console.log(czyBooks.books.indexOf(this.bookAdd))
+        let length=czyBooks.books.length;
+        let that=this;
+        let ID=this.bookDetail;
+        //console.log(ID)
+        for (let i = 0; i < length; i++) {
+          if (czyBooks.books[i]._id ==ID){//如果等于当前id就改变当前阅读章节
+            czyBooks.books[i].lastReadChapter= that.chapterList[that.page].title;
+            czyBooks.books[i].lastReadChapterIndex= that.page;
+          }
+        }
+        czyBooks=JSON.stringify(czyBooks);
+        localStorage.removeItem("czyBooks")
+        localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
+        console.log(JSON.parse(localStorage.getItem("czyBooks")))
+      },
       handleBottomChange(status) {
         this.bottomStatus = status;
       },
@@ -104,7 +136,7 @@
         if (this.firstLoad){
           setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
-            this.loadPrevMui(-1);
+            //this.loadPrevMui(-1);
             this.$refs.loadmore.onBottomLoaded();
             this.firstLoad=false;
           }, 800);
@@ -114,7 +146,7 @@
         } else {
           setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
-            this.loadPrevMui(1);
+            //this.loadPrevMui(1);
             this.$refs.loadmore.onBottomLoaded();
           }, 200);
         }
@@ -224,6 +256,10 @@
                 newText.push(arr[i])
               }
               that.bodyText=newText;
+              that.changeBookshelf()
+              setTimeout(() => {
+                document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+              }, 100);
               //console.log(this.bodyText)
             }
           },
@@ -235,6 +271,7 @@
         });
       },
       loadPrevMui(num){
+        this.allLoaded = false;
         //this.openFullScreen();
         this.page =this.page+num;
         if (this.page<0){
@@ -300,8 +337,16 @@
     },
     created() {
       this.getNovelMui();
+      let that=this;
+      this.$mui.back = function() {//从书架返回到娱乐页面
+        that.$router.push('/Novel/NovelBookshelf')
+      };
+      setTimeout(() => {
+        document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+      }, 100);
     },
     mounted(){
+      this.bookReadIndex();
       //this.openFullScreen();
       this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top -60;
     }

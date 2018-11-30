@@ -10,16 +10,23 @@
       <!--<pre style="text-align: left">
         {{txt}}
       </pre>-->
+      <div class="booksList" v-for="book in booksList" @click="toBookDetail(book._id)">
+        <img :src="book.cover" alt="">
+        <div class="book-title">{{book.title}}</div>
+        <div class="book-lastChapter">阅读至： {{book.lastReadChapter}}</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
   let query='query';
+  import {mapGetters, mapActions} from 'vuex'
   export default {
     name: "NovelBookshelfDev",
     data(){
       return{
+        booksList:[],
         txt:`
 这个只是闲着没事做做看，由于需要跨域所以有以下几种方法
 一：只是在Vue的本地运行
@@ -67,11 +74,28 @@
 });`
       }
     },
+    computed: {
+      ...mapGetters([
+        'bookDetail'
+      ]),
+    },
     methods:{
+      ...mapActions([
+        'bookDetailChange'
+      ]),
+      toBookDetail(id){//去小说详情页面
+        this.bookDetailChange(id);
+        this.$router.push('/NovelDev/NovelDetailDev')
+      },
       toSearch(){
         /*/Novel/NovelSearch*/
         this.$router.push('/NovelDev/NovelSearchDev')
       }
+    },
+    created(){
+      let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+      this.booksList=czyBooks.books;
+      console.log(this.booksList)
     }
   }
 </script>
@@ -95,5 +119,37 @@
     width: @width-height;
     overflow-y: scroll;
     overflow-x: hidden;
+  }
+  /*存储*/
+  .booksList{
+    height: 100px;
+    width: calc(100% - 40px);
+    padding: 15px 0px;
+    border-bottom: 1px solid #9aec71;
+    margin: auto;
+    clear: both;
+  }
+  .booksList img{
+    height: 100%;
+    width: auto;
+    float: left;
+  }
+  .book-title{
+    height: 23px;
+    width: calc(100% - 120px);
+    font-size: 14px;
+    float: left;
+    text-align: left;
+    padding-left: 20px;
+    color: #92465a;
+  }
+  .book-lastChapter{
+    height: auto;
+    width: calc(100% - 80px);
+    font-size: 14px;
+    float: left;
+    text-align: left;
+    padding-left: 20px;
+    color: #92465a;
   }
 </style>

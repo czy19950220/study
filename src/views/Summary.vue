@@ -50,12 +50,15 @@
     mounted(){
       this.titleOfPath(this.$route.path.toLowerCase());
       //console.log(this.$route.path.toLowerCase());
-      this.$mui.init({
-        swipeBack:true, //启用右滑关闭功能
-        keyEventBind: {
-          backbutton: false  //关闭back按键监听
-        }
-      });
+      let that=this;
+      this.$mui.back = function() {
+        var btn = ["确定", "取消"];
+        that.$mui.confirm('确认关闭APP？', '提示', btn, function(e) {
+          if(e.index == 0) {
+            plus.runtime.quit();
+          }
+        });
+      };
     },
 
   }

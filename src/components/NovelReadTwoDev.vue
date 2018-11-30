@@ -86,7 +86,7 @@
         title: '',
         chapterList: [],//所有章节
         chapterListNew:[],//分页后章节
-        page: this.$route.params.page || 0, //章节
+        page: 0, //章节
         bodyText: '',
         pageVal:1,//分页第几页
       }
@@ -97,6 +97,38 @@
       ])
     },
     methods: {
+      bookReadIndex(){
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        //console.log(czyBooks.books.indexOf(this.bookAdd))
+        let length=czyBooks.books.length;
+        let that=this;
+        let ID=this.bookDetail;
+        let index=0;
+        for (let i = 0; i < length; i++) {
+          if (czyBooks.books[i]._id ==ID){//如果等于当前id就改变当前阅读章节
+            index=czyBooks.books[i].lastReadChapterIndex;
+          }
+        }
+        this.page=index;
+      },
+      changeBookshelf(){//改变书架存储的阅读至第几章
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        //console.log(czyBooks.books.indexOf(this.bookAdd))
+        let length=czyBooks.books.length;
+        let that=this;
+        let ID=this.bookDetail;
+        //console.log(ID)
+        for (let i = 0; i < length; i++) {
+          if (czyBooks.books[i]._id ==ID){//如果等于当前id就改变当前阅读章节
+            czyBooks.books[i].lastReadChapter= that.chapterList[that.page].title;
+            czyBooks.books[i].lastReadChapterIndex= that.page;
+          }
+        }
+        czyBooks=JSON.stringify(czyBooks);
+        localStorage.removeItem("czyBooks")
+        localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
+        console.log(JSON.parse(localStorage.getItem("czyBooks")))
+      },
       handleBottomChange(status) {
         this.bottomStatus = status;
       },
@@ -104,7 +136,7 @@
         if (this.firstLoad){
           setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
-            this.loadPrev(-1);
+            //this.loadPrev(-1);
             this.$refs.loadmore.onBottomLoaded();
             this.firstLoad=false;
           }, 800);
@@ -136,11 +168,13 @@
         this.allLoaded = false;//判断是否全部加载完毕
         this.page=(this.pageVal-1)*100+index;
         //console.log((this.page+1)+'章');
+        //console.log(this.chapterList)
         this.getText(this.chapterList);
         this.title=title;
         this.$refs.drawerLayout.toggle(false);
         document.getElementById("book").scrollTop=0;
         //this.openFullScreen();
+        //console.log(this.chapterList[this.page].title);//打印出当前阅读的章节名字
       },
       handleCurrentChange(val) {//换页
         this.chapterListNew=this.chapterList.slice((val-1)*100,(val)*100);
@@ -179,6 +213,8 @@
         })
       },
       getText(chapters) {//http://chapter2.zhuishushenqi.com
+        //console.log(this.page)
+        //console.log(chapters[this.page].title)
         axios.get(`/chapter/` + `${encodeURIComponent(chapters[this.page].link)}` + `?k=2124b73d7e2e1945&t=1468223717)`).then((response) => {
           if (response.status == 200) {
             let data = response.data;
@@ -208,6 +244,7 @@
               }
               this.bodyText=newText;
               //console.log(this.bodyText)
+              this.changeBookshelf()
             }
           }
         }).catch((err) => {
@@ -278,8 +315,10 @@
     },
     created() {
       this.getNovel();
+      console.log(this.page)
     },
     mounted(){
+      this.bookReadIndex();
       //this.openFullScreen();
       this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top -60;
     }

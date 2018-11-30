@@ -49,7 +49,7 @@
         let that=this;
         this.$mui.back = function() {
           var btn = ["确定", "取消"];
-          that.$mui.confirm('确认关闭当前窗口？', 'Hello MUI', btn, function(e) {
+          that.$mui.confirm('确认关闭APP？', '提示', btn, function(e) {
             if(e.index == 0) {
               plus.runtime.quit();
             }

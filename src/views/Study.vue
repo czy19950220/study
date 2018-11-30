@@ -55,15 +55,15 @@
     },
     mounted(){
       this.titleOfPath(this.$route.path.toLowerCase());
-      this.$mui.init({
-        swipeBack:false, //右滑关闭功能
-      });
       let that=this;
-      this.$mui.back = function(){
-        that.$mui.plusReady(function() {
-          plus.runtime.quit();
+      this.$mui.back = function() {
+        var btn = ["确定", "取消"];
+        that.$mui.confirm('确认关闭APP？', '提示', btn, function(e) {
+          if(e.index == 0) {
+            plus.runtime.quit();
+          }
         });
-      }
+      };
     },
     created(){
 

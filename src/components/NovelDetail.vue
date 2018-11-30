@@ -1,7 +1,7 @@
 <template>
   <div class="book-detail">
     <mt-header :title='`${book.title}`'>
-      <router-link to="/Novel/NovelSearch" slot="left">
+      <router-link to="/Novel/NovelBookshelf" slot="left">
         <mt-button icon="back">返回</mt-button>
       </router-link>
     </mt-header>
@@ -16,7 +16,7 @@
       </div>
       <div style="width: 100%;float: left">
         <br>
-        <mt-button @click.native="addBook" size="large" type="primary">添加书架</mt-button>
+        <mt-button @click.native="addBook" size="large" type="primary">{{addRemove}}</mt-button>
         <br>
         <mt-button @click.native="readBook" size="large">开始阅读</mt-button>
       </div>
@@ -35,6 +35,8 @@
     data() {
       return {
         book: {},
+        addRemove:'添加书架',
+        bookAdd:{}
       }
     },
     computed: {
@@ -43,20 +45,49 @@
       ])
     },
     methods: {
-      addBook(){
-        let x=0;
-        if(x==1){
-          let instance = Toast('添加成功');
-          setTimeout(() => {
-            instance.close();
-          }, 2000);
-        }else {
-          let instance = Toast('移除成功');
-          setTimeout(() => {
-            instance.close();
-          }, 2000);
+      hasBook(){//判断是否书架有这个书没？
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        //console.log(czyBooks.books.indexOf(this.bookAdd))
+        let length=czyBooks.books.length;
+        let that=this;
+        let has=0;
+        for (let i = 0; i < length; i++) {
+          if (czyBooks.books[i]._id==that.bookAdd._id){
+            has+=1;
+          }
         }
-
+        //console.log(has)
+        if (has > 0){//有
+          that.addRemove='移除书架'
+        } else {//没有
+          that.addRemove='添加书架'
+        }
+      },
+      addBook(){
+        let that=this;
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        let length=czyBooks.books.length;
+        let has=0;
+        for (let i = 0; i < length; i++) {
+          if (czyBooks.books[i]._id==that.bookAdd._id){
+            has+=1;
+          }
+        }
+        if (has > 0){//有==>移除这本书
+          that.addRemove='添加书架';//字变成了添加
+          var arr =$.grep( czyBooks.books, function(n,i){
+            return n._id == that.bookAdd._id;
+          },true);
+          //console.log(arr)
+          czyBooks.books=arr;
+        } else {//没有==>添加这本书
+          czyBooks.books.push(that.bookAdd);//添加这个书
+          that.addRemove='移除书架';//字变成了移除
+        }
+        czyBooks=JSON.stringify(czyBooks);
+        localStorage.removeItem("czyBooks")
+        localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
+        console.log(JSON.parse(localStorage.getItem("czyBooks")))
       },
       readBook(){
         this.$router.push('/Novel/NovelReadTwo')
@@ -99,6 +130,14 @@
             that.book = data;
             that.book.cover = that.book.cover ? that.url2Real(that.book.cover) : '../assets/imgs/err.png';
             that.book.wordCount = that.book.wordCount ? that.wordCount2Str(that.book.wordCount) :0;
+            that.bookAdd.cover=that.book.cover;//封面
+            that.bookAdd.wordCount=that.book.wordCount;//字数
+            that.bookAdd._id=that.book._id;//ID
+            that.bookAdd.title=that.book.title;//名字
+            that.bookAdd.lastReadChapter='还没阅读';//第一章节
+            that.bookAdd.lastReadChapterIndex=0;//第一章节
+            //console.log(this.bookAdd)//需要存储的一个对象（book）
+            that.hasBook()
           },
           error:function(xhr,type,errorThrown){
             //异常处理；
@@ -110,6 +149,10 @@
     },
     created() {
       this.getBook2();
+      let that=this;
+      this.$mui.back = function() {//从书架返回到娱乐页面
+        that.$router.push('/Novel/NovelBookshelf')
+      };
     }
   }
 </script>

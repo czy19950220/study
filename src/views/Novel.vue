@@ -4,7 +4,16 @@
 
 <script>
   export default {
-    name: "Novel"
+    name: "Novel",
+    created(){
+      let czyBooks=localStorage.getItem("czyBooks");
+      if (czyBooks==null || czyBooks=='' || czyBooks==undefined){
+        let czyBooks={"books":[]};
+        czyBooks=JSON.stringify(czyBooks);
+        localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
+      }
+      //localStorage.removeItem("czyBooks")//清除
+    }
   }
 </script>
 
