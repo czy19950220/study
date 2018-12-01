@@ -26,6 +26,12 @@
     },
     mounted(){
 
+    },
+    created(){
+      let that=this;
+      this.$mui.back = function() {//从书架返回到学习页面
+        that.$router.push('/Study/Cells')
+      };
     }
   }
 </script>

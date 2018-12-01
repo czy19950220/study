@@ -53,6 +53,10 @@
       for (let i = 1; i <= 20; i++) {
         this.list.push(i);
       }
+      let that=this;
+      this.$mui.back = function() {//从书架返回到学习页面
+        that.$router.push('/Study/Cells')
+      };
     },
     mounted() {
       this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;

@@ -45,22 +45,29 @@
           $(".summary-index").removeClass("summary-index-new");
         }
       },
-      quit(){
+      //退出APP提示
+      quitApp(){
         let that=this;
-        this.$mui.back = function() {
-          var btn = ["确定", "取消"];
-          that.$mui.confirm('确认关闭APP？', '提示', btn, function(e) {
-            if(e.index == 0) {
+        var first = null;
+        this.$mui.back=function(){
+          if(!first){
+            first = new Date().getTime();
+            that.$mui.toast('再按一次退出应用');
+            setTimeout(function(){
+              first = null;
+            },2000);
+          } else {
+            if(new Date().getTime() - first < 2000){
               plus.runtime.quit();
             }
-          });
+          }
         };
       }
     },
     mounted(){
       this.titleOfPath(this.$route.path.toLowerCase());
       //console.log(this.$route.path.toLowerCase());
-      this.quit();
+      this.quitApp();
     },
   }
 </script>

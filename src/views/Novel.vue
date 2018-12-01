@@ -8,7 +8,7 @@
     created(){
       let czyBooks=localStorage.getItem("czyBooks");
       if (czyBooks==null || czyBooks=='' || czyBooks==undefined){
-        let czyBooks={"books":[]};
+        let czyBooks={"books":[],"fontSize":18};
         czyBooks=JSON.stringify(czyBooks);
         localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
       }

@@ -15,12 +15,7 @@
       <!--侧边栏内容-->
       <div class="drawer" slot="drawer">
         <div class="text">
-          <mt-cell title="还"></mt-cell>
-          <mt-cell title="没"></mt-cell>
-          <mt-cell title="想"></mt-cell>
-          <mt-cell title="好"></mt-cell>
-          <mt-cell title="写"></mt-cell>
-          <mt-cell title="啥"></mt-cell>
+          <div v-for="font in fonts" @click="changeFont(font)"><mt-cell :title="font"></mt-cell></div>
         </div>
       </div>
       <!--主页内容-->
@@ -36,6 +31,7 @@
 <script>
   import axios from 'axios';
   import IndexMain from './../components/IndexMain'
+  import {mapGetters, mapActions} from 'vuex'
   import './../assets/css/index.css'
   export default {
     name: "Index",
@@ -44,7 +40,7 @@
     },
     data(){
       return{
-
+        fonts:['汉仪细行楷','汉仪楷体简','方正喵呜','unset']
       }
     },
     watch:{
@@ -54,6 +50,15 @@
 
     },
     methods: {
+      ...mapActions([
+        'myFontFamilyChange'
+      ]),
+      //改变字体
+      changeFont(font){
+        this.myFontFamilyChange(font);
+        //console.log(font);
+        localStorage.setItem("fontFamily",font);//字体持久化
+      },
       handleSlideStart() {
         //console.info('slide-start');
       },
@@ -69,11 +74,30 @@
       },
       handleToggleDrawer() {
         this.$refs.drawerLayout.toggle();
+      },
+      //退出APP提示
+      quitApp(){
+        let that=this;
+        var first = null;
+        this.$mui.back=function(){
+          if(!first){
+            first = new Date().getTime();
+            that.$mui.toast('再按一次退出应用');
+            setTimeout(function(){
+              first = null;
+            },2000);
+          } else {
+            if(new Date().getTime() - first < 2000){
+              plus.runtime.quit();
+            }
+          }
+        };
       }
     },
     created(){
       //http://api.zhuishushenqi.com/book/fuzzy-search?query=大王&start=0&limit=20
       //console.log(this.drawer)
+     this.quitApp();
     }
   }
 </script>

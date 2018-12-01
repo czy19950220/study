@@ -1,5 +1,23 @@
 <template>
   <div class="book-read">
+    <el-dialog
+      title="设置"
+      :visible.sync="centerDialogVisible"
+      width="90%"
+      center>
+      <span>字体大小:{{rangeValue}}像素（px）</span>
+      <mt-range
+        v-model="rangeValue"
+        :min="12"
+        :max="48"
+        :step="2"
+        :bar-height="5">
+      </mt-range>
+      <!--<span>字体：</span>
+      <mt-picker :slots="fontSlot" @change="onFontChange" :visible-item-count="3"></mt-picker>-->
+      <span slot="footer" class="dialog-footer">
+        </span>
+    </el-dialog>
     <vue-drawer-layout
       ref="drawerLayout"
       @mask-click="handleMaskClick"
@@ -41,7 +59,7 @@
           <div class="page-loadmore">
             <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
               <mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" ref="loadmore">
-                <pre class="pre-con" v-for="text in bodyText" v-html="text"></pre>
+                <div :class="preCon" :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}" v-for="text in bodyText" v-html="text"></div>
                 <div slot="bottom" class="mint-loadmore-bottom">
                   <span v-show="bottomStatus !== 'loading'" :class="{ 'is-rotate': bottomStatus === 'drop' }">↑</span>
                   <span v-show="bottomStatus === 'loading'">
@@ -54,13 +72,13 @@
         </div>
         <!--底部切换页面-->
         <mt-tabbar>
-          <mt-tab-item id="外卖">
+          <mt-tab-item id="上一章">
             <mt-button type="danger" @click="loadPrevMui(-1)">上一章</mt-button>
           </mt-tab-item>
-          <mt-tab-item id="订单">
+          <mt-tab-item id="设置">
             <mt-button type="primary" @click="sheZhi">设置</mt-button>
           </mt-tab-item>
-          <mt-tab-item id="发现">
+          <mt-tab-item id="下一章">
             <mt-button type="danger" @click="loadPrevMui(1)">下一章</mt-button>
           </mt-tab-item>
         </mt-tabbar>
@@ -77,28 +95,64 @@
     name: "NovelReadTwo",
     data() {
       return {
-        firstLoad:true,
-        allLoaded: false,
+        fontSlot: [{//字体选项
+          flex: 1,
+          values: ['Microsoft YaHei','华文楷体','宋体', '楷体', 'none','unset'],
+          className: 'slot1'
+        }],
+        fontFamily:'',//字体
+        preCon:{
+          precon:true,//基础设置
+        },
+        centerDialogVisible:false,//设置
+        rangeValue:16,//字体
+        firstLoad:true,//首次加载
+        allLoaded: false,//全部加载？
         bottomStatus: '',
-        wrapperHeight: 0,
-        pickerValue:"",
+        wrapperHeight: 0,//高度
         fullscreenLoading: false,//加载动画
-        title: '',
+        title: '',//title
         chapterList: [],//所有章节```
         chapterListNew:[],//分页后章节
         page: 0, //章节
-        bodyText: '',
+        bodyText: '',//内容
         pageVal:1,//分页第几页
       }
     },
     computed: {
       ...mapGetters([
-        'bookDetail'
+        'bookDetail',
+        'myFontFamily'
       ])
     },
+    watch:{
+      rangeValue:{
+        handler(curVal,oldVal){
+          console.log(curVal);
+          this.handleChange(curVal);
+        },
+      }
+    },
     methods: {
+      //字体改变
+      onFontChange(picker, values) {
+        this.fontFamily =`couriernew, courier,${values[0]}`;
+        console.log(this.fontFamily)
+      },
+      //改变字体大小
+      handleChange(value){
+        console.log(value);
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        czyBooks.fontSize=value;
+        console.log(czyBooks)
+        czyBooks=JSON.stringify(czyBooks);
+        localStorage.removeItem("czyBooks");
+        localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
+      },
+      //阅读到第几章的索引
       bookReadIndex(){
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        this.rangeValue=czyBooks.fontSize;//字体大小
         //console.log(czyBooks.books.indexOf(this.bookAdd))
         let length=czyBooks.books.length;
         let that=this;
@@ -111,7 +165,8 @@
         }
         this.page=index;
       },
-      changeBookshelf(){//改变书架存储的阅读至第几章
+      //改变书架存储的阅读至第几章
+      changeBookshelf(){
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
         //console.log(czyBooks.books.indexOf(this.bookAdd))
         let length=czyBooks.books.length;
@@ -132,6 +187,7 @@
       handleBottomChange(status) {
         this.bottomStatus = status;
       },
+      //上拉刷新
       loadBottom() {
         if (this.firstLoad){
           setTimeout(() => {
@@ -146,25 +202,29 @@
         } else {
           setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
-            //this.loadPrevMui(1);
+            this.loadPrevMui(1);
             this.$refs.loadmore.onBottomLoaded();
           }, 200);
         }
       },
-      sheZhi(){//不想写设置了，凑合看吧
-        Toast({
+      //设置
+      sheZhi(){//不想写了，凑合看吧
+        /*Toast({
           message: '不想写设置了，凑合看吧...',
           position: 'bottom',
           duration: 2000
-        });
+        });*/
+        this.centerDialogVisible=true;
       },
-      openFullScreen() {//加载动画
+      //加载动画
+      openFullScreen() {
         this.fullscreenLoading = true;
         setTimeout(() => {
           this.fullscreenLoading = false;
         }, 500);
       },
-      toChapterMui(title,index){//换章节
+      //换章节
+      toChapterMui(title,index){
         this.allLoaded = false;//判断是否全部加载完毕
         this.page=(this.pageVal-1)*100+index;
         //console.log((this.page+1)+'章');
@@ -174,20 +234,24 @@
         document.getElementById("book").scrollTop=0;
         //this.openFullScreen();
       },
-      handleCurrentChange(val) {//换页
+      //换页
+      handleCurrentChange(val) {
         this.chapterListNew=this.chapterList.slice((val-1)*100,(val)*100);
         //console.log(`当前页: ${val}`);
         //console.log(this.chapterListNew);
         this.pageVal=val;
       },
-      handleMaskClick() {//点击关闭右侧框
+      //点击关闭右侧框
+      handleMaskClick() {
         //console.info('mask-click');
         this.$refs.drawerLayout.toggle(false);
       },
-      more(){//点击打开右侧框
+      //点击打开右侧框
+      more(){
         this.$refs.drawerLayout.toggle();
       },
-      getLinkMui(sourceId) {//获取章节和链接
+      //获取章节和链接
+      getLinkMui(sourceId) {
         let that=this;
         this.$mui.ajax({
           url : 'http://api.zhuishushenqi.com/toc/'+sourceId+'?view=chapters',
@@ -216,6 +280,7 @@
           }
         });
       },
+      //获取章节的内容
       getTextMui(chapters) {//http://chapter2.zhuishushenqi.com
         let that=this;
         this.$mui.ajax({
@@ -259,7 +324,7 @@
               that.changeBookshelf()
               setTimeout(() => {
                 document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
-              }, 100);
+              }, 200);
               //console.log(this.bodyText)
             }
           },
@@ -270,6 +335,7 @@
           }
         });
       },
+      //上/下一章
       loadPrevMui(num){
         this.allLoaded = false;
         //this.openFullScreen();
@@ -301,6 +367,7 @@
           }, 100);
         }
       },
+      //获取小说
       getNovelMui(){
         let that=this;
         this.$mui.ajax({
@@ -376,18 +443,19 @@
     clear: both;
   }
 
-  .pre-con {
+  .precon {
     padding: 0 10px;
-    font-size: 16px;
     line-height: 1.5;
     color: #333;
     white-space: pre-wrap;
     white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
     white-space: -o-pre-wrap; /* Opera 7 */
     word-wrap: break-word;
-    font-family: couriernew, courier, monospace;
+    /*font-family: couriernew, courier, 华文楷体;*/
+    font-family: "Microsoft YaHei";
     text-align: left;
     text-indent: 2em;
+    margin-bottom: 0px;
   }
   .drawer-book{
     height: 100%;

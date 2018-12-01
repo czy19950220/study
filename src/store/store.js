@@ -14,6 +14,7 @@ export const store = new Vuex.Store({
     userName: '',//用户名
     drawer: "关闭",
     bookDetail: '',//书籍详情
+    myFontFamily:'方正喵呜',//字体
   },
   getters: {
     changeTest: (state) => {
@@ -33,6 +34,9 @@ export const store = new Vuex.Store({
     },
     bookDetail: (state) => {
       return state.bookDetail;
+    },
+    myFontFamily: (state) => {
+      return state.myFontFamily;
     }
   },
   mutations: {
@@ -52,6 +56,9 @@ export const store = new Vuex.Store({
     },
     bookDetailChange: (state, payload) => {
       state.bookDetail = payload;
+    },
+    myFontFamilyChange: (state, payload) => {
+      state.myFontFamily = payload;
     }
   },
   actions: {
@@ -69,6 +76,9 @@ export const store = new Vuex.Store({
     },
     bookDetailChange: (context, payload) => {
       context.commit("bookDetailChange", payload);
+    },
+    myFontFamilyChange: (context, payload) => {
+      context.commit("myFontFamilyChange", payload);
     }
   }
 });

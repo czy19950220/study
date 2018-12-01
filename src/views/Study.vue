@@ -32,7 +32,6 @@
       }
     },
     methods:{
-
       titleOfPath(path){
         this.showBack=true;
         if (path.indexOf('pulldown') >= 0) {
@@ -51,19 +50,39 @@
           this.title='学习';
           this.showBack=false;
         }
+      },
+      //退出APP提示
+      quitApp(){
+        let that=this;
+        var first = null;
+        this.$mui.back=function(){
+          if(!first){
+            first = new Date().getTime();
+            that.$mui.toast('再按一次退出应用');
+            setTimeout(function(){
+              first = null;
+            },2000);
+          } else {
+            if(new Date().getTime() - first < 2000){
+              plus.runtime.quit();
+            }
+          }
+        };
       }
     },
     mounted(){
       this.titleOfPath(this.$route.path.toLowerCase());
       let that=this;
-      this.$mui.back = function() {
+      this.quitApp();
+      /*this.$mui.back = function() {
         var btn = ["确定", "取消"];
         that.$mui.confirm('确认关闭APP？', '提示', btn, function(e) {
           if(e.index == 0) {
             plus.runtime.quit();
           }
         });
-      };
+      };*/
+
     },
     created(){
 

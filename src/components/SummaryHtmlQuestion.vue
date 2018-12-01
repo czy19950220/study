@@ -115,6 +115,12 @@
     },
     mounted() {
       this.loadQuestion();
+    },
+    created(){
+      let that=this;
+      this.$mui.back = function() {//从书架返回到总结页面
+        that.$router.push('/Summary/SummaryCells')
+      };
     }
   }
 </script>

@@ -1,0 +1,18 @@
+@font-face {
+  font-family: '汉仪细行楷';
+  src: url('xiXingKai.ttf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: '汉仪楷体简';
+  src: url('hanYiKaiTiJian.ttf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: '方正喵呜';
+  src: url('FZMWFont.ttf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
