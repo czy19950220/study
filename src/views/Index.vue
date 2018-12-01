@@ -15,7 +15,7 @@
       <!--侧边栏内容-->
       <div class="drawer" slot="drawer">
         <div class="text">
-          <div v-for="font in fonts" @click="changeFont(font)"><mt-cell :title="font"></mt-cell></div>
+          <div v-for="font in fonts" @click="changeFont(font.value)"><mt-cell :title="font.name"></mt-cell></div>
         </div>
       </div>
       <!--主页内容-->
@@ -40,7 +40,7 @@
     },
     data(){
       return{
-        fonts:['汉仪细行楷','汉仪楷体简','方正喵呜','unset']
+        fonts:[{name:'汉仪细行楷',value:'HanYiXiXingKai'},{name:'汉仪楷体简',value:'hanYiKaiTiJian'},{name:'方正喵呜',value:'FangZhengMiaoWu'},{name:'不设置',value:'unset'}]
       }
     },
     watch:{

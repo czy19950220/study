@@ -1,17 +1,17 @@
 @font-face {
-  font-family: '汉仪细行楷';
+  font-family: 'HanYiXiXingKai';
   src: url('xiXingKai.ttf') format('opentype');
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
-  font-family: '汉仪楷体简';
+  font-family: 'HnaYiKaiTiJian';
   src: url('hanYiKaiTiJian.ttf') format('opentype');
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
-  font-family: '方正喵呜';
+  font-family: 'FangZhengMiaoWu';
   src: url('FZMWFont.ttf') format('opentype');
   font-weight: bold;
   font-style: normal;
