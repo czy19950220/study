@@ -40,7 +40,7 @@
     },
     data(){
       return{
-        fonts:[{name:'汉仪细行楷',value:'HanYiXiXingKai'},{name:'汉仪楷体简',value:'hanYiKaiTiJian'},{name:'方正喵呜',value:'FangZhengMiaoWu'},{name:'不设置',value:'unset'}]
+        fonts:[{name:'汉仪细行楷',value:'HanYiXiXingKai'},{name:'方正喵呜',value:'FangZhengMiaoWu'},{name:'不设置',value:'unset'}]
       }
     },
     watch:{

@@ -1,0 +1,33 @@
+{
+  "imgs":[
+    {"name":"atlas",   "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/atlas.png"},
+    {"name":"bg_day",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bg_day.png"},
+    {"name":"bg_night","url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bg_night.png"},
+    {"name":"bird0_0",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bird0_0.png"},
+    {"name":"bird0_1",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bird0_1.png"},
+    {"name":"bird0_2",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bird0_2.png"},
+    {"name":"bird1_0",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bird1_0.png"},
+    {"name":"bird1_1",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bird1_1.png"},
+    {"name":"bird1_2",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bird1_2.png"},
+    {"name":"bird2_0",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bird2_0.png"},
+    {"name":"bird2_1",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bird2_1.png"},
+    {"name":"bird2_2",  "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/bird2_2.png"},
+    {"name":"black",     "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/black.png"},
+    {"name":"blink_00", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/blink_00.png"},
+    {"name":"blink_01", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/blink_01.png"},
+    {"name":"blink_02", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/blink_02.png"},
+    {"name":"pipe_down", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/pipe_down.png"},
+    {"name":"pipe_up", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/pipe_up.png"},
+    {"name":"land", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/land.png"},
+    {"name":"number0", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_048.png"},
+    {"name":"number1", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_049.png"},
+    {"name":"number2", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_050.png"},
+    {"name":"number3", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_051.png"},
+    {"name":"number4", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_052.png"},
+    {"name":"number5", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_053.png"},
+    {"name":"number6", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_054.png"},
+    {"name":"number7", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_055.png"},
+    {"name":"number8", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_056.png"},
+    {"name":"number9", "url":"https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/flappybird/font_057.png"}
+  ]
+}

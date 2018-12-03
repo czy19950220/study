@@ -29,7 +29,7 @@
           <el-pagination
             background
             @current-change="handleCurrentChange"
-            :current-page="1"
+            :current-page="currentPage"
             :page-size="100"
             :pager-count="5"
             layout="prev, pager, next"
@@ -118,6 +118,7 @@
         page: 0, //章节
         bodyText: '',
         pageVal:1,//分页第几页
+        currentPage:1,//当前分页第几页
       }
     },
     computed: {
@@ -190,10 +191,12 @@
       },
       //上拉刷新
       loadBottom() {
+        //console.log('上拉了')
         if (this.firstLoad){
           setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
             //this.loadPrev(-1);
+            console.log('第一次上拉了')
             this.$refs.loadmore.onBottomLoaded();
             this.firstLoad=false;
           }, 800);
@@ -202,9 +205,10 @@
           }, 801);
         } else {
           setTimeout(() => {
+            console.log('不是第一次上拉了')
             //this.allLoaded = true;//判断是否全部加载完毕
-            this.loadPrev(1);
             this.$refs.loadmore.onBottomLoaded();
+            this.loadPrev(1);
           }, 200);
         }
       },
@@ -282,6 +286,8 @@
       getText(chapters) {//http://chapter2.zhuishushenqi.com
         //console.log(this.page)
         //console.log(chapters[this.page].title)
+        this.currentPage=parseInt(this.page/100)+1;
+        this.handleCurrentChange(this.currentPage);
         axios.get(`/chapter/` + `${encodeURIComponent(chapters[this.page].link)}` + `?k=2124b73d7e2e1945&t=1468223717)`).then((response) => {
           if (response.status == 200) {
             let data = response.data;

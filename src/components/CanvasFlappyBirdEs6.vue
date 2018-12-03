@@ -326,7 +326,7 @@
     }
     var params={
       id:"canvas-three",
-      Rjson:'http://pdae2q9v2.bkt.clouddn.com/B2.json'
+      Rjson:'http://piubrh5r0.bkt.clouddn.com/json2/B2.json'
     };
     var game=new Game(params);
   }

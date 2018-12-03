@@ -1,5 +1,23 @@
 <template>
   <div class="book-read">
+    <el-dialog
+      title="设置"
+      :visible.sync="centerDialogVisible"
+      width="90%"
+      center>
+      <span>字体大小:{{rangeValue}}像素（px）</span>
+      <mt-range
+        v-model="rangeValue"
+        :min="12"
+        :max="48"
+        :step="2"
+        :bar-height="5">
+      </mt-range>
+      <!--<span>字体：</span>
+      <mt-picker :slots="fontSlot" @change="onFontChange" :visible-item-count="3"></mt-picker>-->
+      <span slot="footer" class="dialog-footer">
+        </span>
+    </el-dialog>
     <vue-drawer-layout
       ref="drawerLayout"
       @mask-click="handleMaskClick"
@@ -31,23 +49,36 @@
       <div class="content" slot="content">
         <!--header-->
         <mt-header :title=title>
-          <router-link to="/Novel/NovelDetail" slot="left">
+          <router-link to="/NovelDev/NovelDetailDev" slot="left">
             <mt-button icon="back">返回</mt-button>
           </router-link>
           <mt-button icon="more" slot="right" @click="more"></mt-button>
         </mt-header>
         <div class="book-read-main" id="book" v-loading.fullscreen.lock="fullscreenLoading">
           <!--文章-->
-          <pre class="pre-con" v-for="text in bodyText" v-html="text"></pre>
+          <div class="page-loadmore">
+            <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
+              <mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" ref="loadmore">
+                <div :class="preCon" :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}" v-for="text in bodyText" v-html="text"></div>
+                <div slot="bottom" class="mint-loadmore-bottom">
+                  <span v-show="bottomStatus !== 'loading'" :class="{ 'is-rotate': bottomStatus === 'drop' }">↑</span>
+                  <span v-show="bottomStatus === 'loading'">
+                    <mt-spinner type="snake"></mt-spinner>
+                  </span>
+                </div>
+              </mt-loadmore>
+            </div>
+          </div>
         </div>
+        <!--底部切换页面-->
         <mt-tabbar>
-          <mt-tab-item id="外卖">
+          <mt-tab-item id="上一章">
             <mt-button type="danger" @click="loadPrev(-1)">上一章</mt-button>
           </mt-tab-item>
-          <mt-tab-item id="订单">
-            <mt-button type="primary" @click="sheZhi">设置</mt-button>
+          <mt-tab-item id="设置">
+            <mt-button type="primary" @click="sheZhi()">设置</mt-button>
           </mt-tab-item>
-          <mt-tab-item id="发现">
+          <mt-tab-item id="下一章">
             <mt-button type="danger" @click="loadPrev(1)">下一章</mt-button>
           </mt-tab-item>
         </mt-tabbar>
@@ -64,58 +95,167 @@
     name: "NovelRead",
     data() {
       return {
+        fontSlot: [{//字体选项
+          flex: 1,
+          values: ['Microsoft YaHei','华文楷体','宋体', '楷体', 'none','unset'],
+          className: 'slot1'
+        }],
+        fontFamily:'',//字体
+        preCon:{
+          precon:true,//基础设置
+        },
+        centerDialogVisible:false,//设置
+        rangeValue:16,
+        firstLoad:true,//首次加载
+        allLoaded: false,//全部读完？
+        bottomStatus: '',
+        wrapperHeight: 0,
         pickerValue:"",
         fullscreenLoading: false,//加载动画
         title: '',
         chapterList: [],//所有章节
         chapterListNew:[],//分页后章节
-        page: this.$route.params.page || 0, //章节
+        page: 0, //章节
         bodyText: '',
         pageVal:1,//分页第几页
       }
     },
     computed: {
       ...mapGetters([
-        'bookDetail'
+        'bookDetail',
+        'myFontFamily'
       ])
     },
+    watch:{
+      rangeValue:{
+        handler(curVal,oldVal){
+          console.log(curVal);
+          this.handleChange(curVal);
+        },
+      }
+    },
     methods: {
-      sheZhi(){//不想写设置了，凑合看吧
-        Toast({
+      //字体改变
+      onFontChange(picker, values) {
+        this.fontFamily =`couriernew, courier,${values[0]}`;
+        console.log(this.fontFamily)
+      },
+      //改变字体大小
+      handleChange(value){
+        console.log(value);
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        czyBooks.fontSize=value;
+        console.log(czyBooks)
+        czyBooks=JSON.stringify(czyBooks);
+        localStorage.removeItem("czyBooks");
+        localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
+      },
+      //阅读章数的index
+      bookReadIndex(){
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        this.rangeValue=czyBooks.fontSize;
+        //console.log(czyBooks)
+        let length=czyBooks.books.length;
+        let that=this;
+        let ID=this.bookDetail;
+        let index=0;
+        for (let i = 0; i < length; i++) {
+          if (czyBooks.books[i]._id ==ID){//如果等于当前id就改变当前阅读章节
+            index=czyBooks.books[i].lastReadChapterIndex;
+          }
+        }
+        this.page=index;
+      },
+      //改变书架存储的阅读至第几章
+      changeBookshelf(){
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        //console.log(czyBooks.books.indexOf(this.bookAdd))
+        let length=czyBooks.books.length;
+        let that=this;
+        let ID=this.bookDetail;
+        //console.log(ID)
+        for (let i = 0; i < length; i++) {
+          if (czyBooks.books[i]._id ==ID){//如果等于当前id就改变当前阅读章节
+            czyBooks.books[i].lastReadChapter= that.chapterList[that.page].title;
+            czyBooks.books[i].lastReadChapterIndex= that.page;
+          }
+        }
+        czyBooks=JSON.stringify(czyBooks);
+        localStorage.removeItem("czyBooks")
+        localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
+        //console.log(JSON.parse(localStorage.getItem("czyBooks")))
+      },
+      handleBottomChange(status) {
+        this.bottomStatus = status;
+      },
+      //上拉刷新
+      loadBottom() {
+        if (this.firstLoad){
+          setTimeout(() => {
+            //this.allLoaded = true;//判断是否全部加载完毕
+            //this.loadPrev(-1);
+            this.$refs.loadmore.onBottomLoaded();
+            this.firstLoad=false;
+          }, 800);
+          setTimeout(() => {
+            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0;
+          }, 801);
+        } else {
+          setTimeout(() => {
+            //this.allLoaded = true;//判断是否全部加载完毕
+            this.loadPrev(1);
+            this.$refs.loadmore.onBottomLoaded();
+          }, 200);
+        }
+      },
+      //设置了
+      sheZhi(){
+        /*Toast({
           message: '不想写设置了，凑合看吧...',
           position: 'bottom',
           duration: 2000
-        });
+        });*/
+        this.centerDialogVisible=true;
+
       },
-      openFullScreen() {//加载动画
+      //加载动画
+      openFullScreen() {
         this.fullscreenLoading = true;
         setTimeout(() => {
           this.fullscreenLoading = false;
-        }, 100);
+        }, 500);
       },
-      toChapter(title,index){//换章节
+      //换章节
+      toChapter(title,index){
+        this.allLoaded = false;//判断是否全部加载完毕
         this.page=(this.pageVal-1)*100+index;
         //console.log((this.page+1)+'章');
-        this.getText2(this.chapterList);
+        //console.log(this.chapterList)
+        this.getText(this.chapterList);
         this.title=title;
         this.$refs.drawerLayout.toggle(false);
         document.getElementById("book").scrollTop=0;
         //this.openFullScreen();
+        //console.log(this.chapterList[this.page].title);//打印出当前阅读的章节名字
       },
-      handleCurrentChange(val) {//换页
+      //换页
+      handleCurrentChange(val) {
         this.chapterListNew=this.chapterList.slice((val-1)*100,(val)*100);
         //console.log(`当前页: ${val}`);
         //console.log(this.chapterListNew);
         this.pageVal=val;
       },
-      handleMaskClick() {//点击关闭右侧框
+      //点击关闭右侧框
+      handleMaskClick() {
         //console.info('mask-click');
         this.$refs.drawerLayout.toggle(false);
       },
-      more(){//点击打开右侧框
+      //点击打开右侧框
+      more(){
         this.$refs.drawerLayout.toggle();
       },
-      getLink(sourceId) {//获取章节和链接
+      //获取章节和链接
+      getLink(sourceId) {
         let url = '/api/toc/' + sourceId + '?view=chapters';
         axios.get(url).then((response) => {
           //console.log(sourceId)
@@ -126,7 +266,7 @@
             this.title = this.chapterList[this.page].title;
             //console.log(this.chapterList);
             this.chapterListNew=this.chapterList.slice(0,100);
-            this.getText2(this.chapterList);
+            this.getText(this.chapterList);
             //console.log(this.chapterList)
           }
         }).catch((err) => {
@@ -138,7 +278,10 @@
           });
         })
       },
+      //获取文本
       getText(chapters) {//http://chapter2.zhuishushenqi.com
+        //console.log(this.page)
+        //console.log(chapters[this.page].title)
         axios.get(`/chapter/` + `${encodeURIComponent(chapters[this.page].link)}` + `?k=2124b73d7e2e1945&t=1468223717)`).then((response) => {
           if (response.status == 200) {
             let data = response.data;
@@ -168,6 +311,10 @@
               }
               this.bodyText=newText;
               //console.log(this.bodyText)
+              this.changeBookshelf()
+              setTimeout(() => {
+                document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+              }, 200);
             }
           }
         }).catch((err) => {
@@ -178,34 +325,7 @@
           });
         })
       },
-      getText2(chapters) {//http://chapter2.zhuishushenqi.com
-        let params={link:(encodeURIComponent(chapters[this.page].link))};
-        let url=`${this.GLOBAL.serverIp}myNovel`
-        axios.get(url,{
-          params: {
-            link:encodeURIComponent(chapters[this.page].link)
-          }
-        }).then((response) => {
-          //console.log(JSON.parse(response.data.response))
-          let chapter=JSON.parse(response.data.response).chapter;//真正的chapter
-          //console.log(chapter.body)
-          //把回车换成br标签
-          this.bodyText = chapter.body.split("\n").join("<br>");//.split("\n").join("<br>")
-          var arr = this.bodyText.split('<br>');
-          let newText=[];//用来存储新的text文本
-          for(var i=0;i<arr.length;i++){
-            newText.push(arr[i])
-          }
-          this.bodyText=newText;
-
-        }).catch((err) => {
-          Toast({
-            message: '资源没找到',
-            position: 'bottom',
-            duration: 2000
-          });
-        })
-      },
+      //上/下一章
       loadPrev(num){
         //this.openFullScreen();
         this.page =this.page+num;
@@ -216,6 +336,7 @@
             position: 'bottom',
             duration: 2000
           });
+          this.allLoaded = false;//判断是否全部加载完毕
         }else if (this.page>=this.chapterList.length){
           this.page =this.chapterList.length-1;
           Toast({
@@ -223,13 +344,19 @@
             position: 'bottom',
             duration: 2000
           });
+          this.allLoaded = true;//判断是否全部加载完毕
         }else {
-          this.getText2(this.chapterList);
+          this.getText(this.chapterList);
           this.title=this.chapterList[this.page].title;
           //console.log(document.getElementById("book").scrollTop)
-          document.getElementById("book").scrollTop=0;
+          //document.getElementById("book").scrollTop=0;
+          document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+          setTimeout(() => {
+            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+          }, 100);
         }
       },
+      //获取小说
       getNovel(){
         axios.get('/api/toc?view=summary&book=' + this.bookDetail).then((response) => {
           //console.log(response.data)
@@ -256,13 +383,16 @@
             duration: 2000
           });
         });
-      }
+      },
     },
     created() {
-
+      this.getNovel();
+      //console.log(this.page)
     },
     mounted(){
-      this.getNovel();
+      this.bookReadIndex();
+      //this.openFullScreen();
+      this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top -60;
     }
   }
 </script>
@@ -287,21 +417,22 @@
     overflow-y: scroll;
     overflow-x: hidden;
     margin-top: 40px;
-    padding: 10px 15px 0px;
     clear: both;
   }
 
-  .pre-con {
-    font-size: 16px;
+  .precon {
+    padding: 0 10px;
     line-height: 1.5;
     color: #333;
     white-space: pre-wrap;
     white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
     white-space: -o-pre-wrap; /* Opera 7 */
     word-wrap: break-word;
-    font-family: couriernew, courier, monospace;
+    /*font-family: couriernew, courier, 华文楷体;*/
+    font-family: "Microsoft YaHei";
     text-align: left;
     text-indent: 2em;
+    margin-bottom: 0px;
   }
   .drawer-book{
     height: 100%;
@@ -315,5 +446,43 @@
   .mint-tabbar{
     background-color: #97d3ff;
   }
-
+  .page-loadmore{
+  }
+  .page-loadmore .mint-spinner {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .page-loadmore-desc {
+    text-align: center;
+    color: #666;
+    padding-bottom: 5px;
+  }
+  .page-loadmore-desc:last-of-type {
+    border-bottom: solid 1px #eee;
+  }
+  .page-loadmore-listitem {
+    height: 50px;
+    line-height: 50px;
+    border-bottom: solid 1px #eee;
+    text-align: center;
+  }
+  .page-loadmore-listitem:first-child {
+    border-top: solid 1px #eee;
+  }
+  .page-loadmore-wrapper {
+    overflow: scroll;
+  }
+  .mint-loadmore-bottom span {
+    display: inline-block;
+    -webkit-transition: .2s linear;
+    transition: .2s linear;
+    vertical-align: middle
+  }
+  .mint-loadmore-bottom span.is-rotate {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+  }
+  .page-loadmore-list{
+    padding-bottom: 20px;
+  }
 </style>

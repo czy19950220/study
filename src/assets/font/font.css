@@ -5,12 +5,6 @@
   font-style: normal;
 }
 @font-face {
-  font-family: 'HnaYiKaiTiJian';
-  src: url('hanYiKaiTiJian.ttf') format('opentype');
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
   font-family: 'FangZhengMiaoWu';
   src: url('FZMWFont.ttf') format('opentype');
   font-weight: bold;

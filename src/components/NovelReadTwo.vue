@@ -29,7 +29,7 @@
           <el-pagination
             background
             @current-change="handleCurrentChange"
-            :current-page="1"
+            :current-page="currentPage"
             :page-size="100"
             :pager-count="5"
             layout="prev, pager, next"
@@ -117,6 +117,7 @@
         page: 0, //章节
         bodyText: '',//内容
         pageVal:1,//分页第几页
+        currentPage:1,//当前分页第几页
       }
     },
     computed: {
@@ -163,7 +164,9 @@
             index=czyBooks.books[i].lastReadChapterIndex;
           }
         }
-        this.page=index;
+        setTimeout(() => {
+          this.page=index;
+        },50)
       },
       //改变书架存储的阅读至第几章
       changeBookshelf(){
@@ -202,8 +205,8 @@
         } else {
           setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
-            this.loadPrevMui(1);
             this.$refs.loadmore.onBottomLoaded();
+            this.loadPrevMui(1);
           }, 200);
         }
       },
@@ -282,6 +285,8 @@
       },
       //获取章节的内容
       getTextMui(chapters) {//http://chapter2.zhuishushenqi.com
+        this.currentPage=parseInt(this.page/100)+1;
+        this.handleCurrentChange(this.currentPage);
         let that=this;
         this.$mui.ajax({
           url : `http://chapter2.zhuishushenqi.com/chapter/${encodeURIComponent(chapters[that.page].link)}?k=2124b73d7e2e1945&t=1468223717)`,
@@ -403,7 +408,9 @@
       }
     },
     created() {
-      this.getNovelMui();
+      setTimeout(() => {
+        this.getNovelMui();
+      }, 80);
       let that=this;
       this.$mui.back = function() {//从书架返回到娱乐页面
         that.$router.push('/Novel/NovelBookshelf')

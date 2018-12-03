@@ -6,7 +6,7 @@
       </router-link>
       <mt-button icon="search" slot="right" @click="toSearch()" class="novel-search"></mt-button>
     </mt-header>
-    <div class="novel-bookshelf-main">
+    <div class="novel-bookshelf-main" v-loading.fullscreen.lock="fullscreenLoading">
       <!--<pre style="text-align: left">
         {{txt}}
       </pre>-->
@@ -14,6 +14,7 @@
         <img :src="book.cover" alt="">
         <div class="book-title">{{book.title}}</div>
         <div class="book-lastChapter">阅读至： {{book.lastReadChapter}}</div>
+        <div class="book-newChapter">更新至： {{book.newChapter2}}</div>
       </div>
     </div>
   </div>
@@ -21,11 +22,13 @@
 
 <script>
   let query='query';
+  import axios from 'axios';
   import {mapGetters, mapActions} from 'vuex'
   export default {
     name: "NovelBookshelfDev",
     data(){
       return{
+        fullscreenLoading:false,
         booksList:[],
         txt:`
 这个只是闲着没事做做看，由于需要跨域所以有以下几种方法
@@ -90,12 +93,37 @@
       toSearch(){
         /*/Novel/NovelSearch*/
         this.$router.push('/NovelDev/NovelSearchDev')
+      },
+      openFullScreen() {
+        this.fullscreenLoading = true;
+        setTimeout(() => {
+          this.fullscreenLoading = false;
+        }, 1200);
+      },
+      getBooks(){
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        let books=czyBooks.books;
+        for (let i = 0; i < czyBooks.books.length; i++) {
+          let search = `/api/book/${czyBooks.books[i]._id}`;
+          axios.get(search).then((res) => {
+            books[i].newChapter2=res.data.lastChapter;
+          });
+          //console.log(books)
+        }
+        this.openFullScreen();
+        setTimeout(() => {
+          this.booksList=books;
+        },1200)
       }
     },
+    mounted(){
+      this.getBooks();
+      //this.booksList=books;
+      //console.log(this.booksList)
+    },
     created(){
-      let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
-      this.booksList=czyBooks.books;
-      console.log(this.booksList)
+
+
     }
   }
 </script>
@@ -122,7 +150,7 @@
   }
   /*存储*/
   .booksList{
-    height: 100px;
+    height: 130px;
     width: calc(100% - 40px);
     padding: 15px 0px;
     border-bottom: 1px solid #9aec71;
@@ -151,5 +179,17 @@
     text-align: left;
     padding-left: 20px;
     color: #92465a;
+    line-height: 1rem;
+  }
+  .book-newChapter{
+    height: auto;
+    width: calc(100% - 80px);
+    font-size: 14px;
+    float: left;
+    text-align: left;
+    padding-left: 20px;
+    color: #797700;
+    line-height: 1rem;
+    margin-top: 10px;
   }
 </style>
