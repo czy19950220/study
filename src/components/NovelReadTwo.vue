@@ -23,7 +23,7 @@
       @mask-click="handleMaskClick"
       :reverse="true">
       <!--侧栏-->
-      <div class="drawer-book" slot="drawer">
+      <div class="drawer-book" id="drawer-book" slot="drawer">
         <!--分页-->
         <div class="block">
           <el-pagination
@@ -243,6 +243,9 @@
         //console.log(`当前页: ${val}`);
         //console.log(this.chapterListNew);
         this.pageVal=val;
+        setTimeout(() => {
+          document.getElementById('drawer-book').scrollTop=document.getElementsByClassName('blue-class')[0].offsetTop;
+        },50);
       },
       //点击关闭右侧框
       handleMaskClick() {

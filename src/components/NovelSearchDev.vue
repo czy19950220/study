@@ -95,6 +95,12 @@
     mounted() {
       this.getSearch();
       //console.log(this.bookDetail)
+    },
+    created(){
+      let that=this;
+      this.$mui.back = function() {//从书架返回到娱乐页面
+        that.$router.push('/NovelDev/NovelBookshelfDev')
+      };
     }
   }
 </script>

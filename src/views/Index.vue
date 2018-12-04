@@ -97,7 +97,7 @@
     created(){
       //http://api.zhuishushenqi.com/book/fuzzy-search?query=大王&start=0&limit=20
       //console.log(this.drawer)
-     this.quitApp();
+      this.quitApp();
     }
   }
 </script>
