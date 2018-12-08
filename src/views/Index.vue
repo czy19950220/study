@@ -20,9 +20,7 @@
       </div>
       <!--主页内容-->
       <div class="content" slot="content">
-        <div class="text">
-          <index-main></index-main>
-        </div>
+        <index-main></index-main>
       </div>
     </vue-drawer-layout>
   </div>

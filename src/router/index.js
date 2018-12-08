@@ -15,16 +15,13 @@ export default new Router({
       path: '/',
       name: 'Index',
       component:Index,
+      redirect:'/indexCV',
       children:[
-        /*{
-          path: 'PullDown',
-          name: 'PullDown',
-          component : resolve => require(['@/components/PullDown.vue'],resolve)
-        },{
-          path: 'PullUp',
-          name: 'PullUp',
-          component : resolve => require(['@/components/PullUp.vue'],resolve)
-        }*/
+        {
+          path: 'indexCV',
+          name: 'indexCV',
+          component : resolve => require(['@/components/indexCV.vue'],resolve)
+        }
       ]
     },{//学习
       path: '/Study',
@@ -60,6 +57,10 @@ export default new Router({
           path: 'QRImage',
           name: 'QRImage',
           component : resolve => require(['@/components/QRImage.vue'],resolve)
+        },{//
+          path: 'StudyParticleEffectsButton',
+          name: 'StudyParticleEffectsButton',
+          component : resolve => require(['@/components/StudyParticleEffectsButton.vue'],resolve)
         }
       ]
     },{//总结

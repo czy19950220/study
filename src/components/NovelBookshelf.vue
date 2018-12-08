@@ -11,7 +11,7 @@
         {{txt}}
       </pre>-->
       <div class="booksList" v-for="book in booksList" @click="toBookDetail(book._id)">
-        <img :src="book.cover" alt="">
+        <img v-lazy="book.cover" alt="" class="page-lazyload-image">
         <div class="book-title">{{book.title}}</div>
         <div class="book-lastChapter">阅读至： {{book.lastReadChapter}}</div>
         <div class="book-newChapter">更新至： {{book.newChapter2}}</div>
@@ -105,6 +105,7 @@
       getBooks(){
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
         let books=czyBooks.books;
+        let loading=0;
         for (let i = 0; i < czyBooks.books.length; i++) {
           let that=this;
           this.$mui.ajax({
@@ -118,7 +119,11 @@
             scriptCharset:'utf-8',
             headers:{'Content-Type':'application/json'},
             success:function(data){
+              loading++;
               books[i].newChapter2=data.lastChapter;
+              if (loading==czyBooks.books.length){
+                that.booksList=books;
+              }
             },
             error:function(xhr,type,errorThrown){
               //异常处理；
@@ -131,10 +136,8 @@
           });*/
           //console.log(books)
         }
-        this.openFullScreen();
-        setTimeout(() => {
-          this.booksList=books;
-        },1200)
+        //this.openFullScreen();
+        //this.booksList=books;
       }
     },
     mounted(){
@@ -186,6 +189,10 @@
     height: 100%;
     width: auto;
     float: left;
+  }
+  .page-lazyload-image[lazy=loading] {
+    height: auto;
+    width: 70px;
   }
   .book-title{
     height: 23px;

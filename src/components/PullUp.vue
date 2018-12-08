@@ -36,6 +36,7 @@
         this.bottomStatus = status;
       },
       loadBottom() {
+        //console.log('shanglale')
         setTimeout(() => {
           let lastValue = this.list[this.list.length - 1];
           if (lastValue < 80) {

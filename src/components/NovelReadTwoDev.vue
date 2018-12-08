@@ -408,6 +408,7 @@
       this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top -60;
     }
   }
+
 </script>
 
 <style scoped>

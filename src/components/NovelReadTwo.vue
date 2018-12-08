@@ -1,5 +1,5 @@
 <template>
-  <div class="book-read">
+  <div class="book-read container" id="book-read" @click="getMousePos">
     <el-dialog
       title="设置"
       :visible.sync="centerDialogVisible"
@@ -71,19 +71,28 @@
           </div>
         </div>
         <!--底部切换页面-->
-        <mt-tabbar>
-          <mt-tab-item id="上一章">
-            <mt-button type="danger" @click="loadPrevMui(-1)">上一章</mt-button>
-          </mt-tab-item>
-          <mt-tab-item id="设置">
-            <mt-button type="primary" @click="sheZhi">设置</mt-button>
-          </mt-tab-item>
-          <mt-tab-item id="下一章">
-            <mt-button type="danger" @click="loadPrevMui(1)">下一章</mt-button>
-          </mt-tab-item>
+        <mt-tabbar style="background:none;" v-show="showTabbar">
+          <particle-effect-button
+            :hidden="isHidden"
+            color="rgb(50, 186, 250)"
+            :duration="500"
+            type="triangle"
+            drawStyle="stroke"
+          >
+            <mt-tab-item id="上一章" style="width: 100%;">
+              <el-button type="primary" icon="el-icon-arrow-left" @click="loadPrevMui(-1)" style="float: left">上一章</el-button>
+              <el-button type="primary" @click="sheZhi()">设置</el-button>
+              <el-button type="primary" @click="loadPrevMui(1)" style="float: right">下一章<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+            </mt-tab-item>
+          </particle-effect-button>
         </mt-tabbar>
       </div>
     </vue-drawer-layout>
+    <div class="draggable" @click="main_log('点击了')">
+      <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
+        <div class="my-icon-button"></div>
+      </mt-palette-button>
+    </div>
   </div>
 </template>
 
@@ -91,10 +100,17 @@
   import axios from 'axios';
   import {Toast} from 'mint-ui';
   import {mapGetters, mapActions} from 'vuex'
+  import Draggabilly from 'draggabilly'
+  import ParticleEffectButton from 'vue-particle-effect-button'
   export default {
     name: "NovelReadTwo",
+    components: {
+      ParticleEffectButton
+    },
     data() {
       return {
+        showTabbar:true,//下方的切换章节和设置
+        isHidden: false,//粒子按钮动画
         fontSlot: [{//字体选项
           flex: 1,
           values: ['Microsoft YaHei','华文楷体','宋体', '楷体', 'none','unset'],
@@ -118,6 +134,7 @@
         bodyText: '',//内容
         pageVal:1,//分页第几页
         currentPage:1,//当前分页第几页
+        theParams:''
       }
     },
     computed: {
@@ -135,6 +152,50 @@
       }
     },
     methods: {
+      //点击屏幕中间位置的方法x:25-75,y:30-70;
+      getMousePos(event) {
+        var e = event || window.event;
+        var bookRead=document.getElementById('book-read');
+        let width=$('#book-read').width();
+        let height=$('#book-read').height();
+        let clientX=e.clientX;
+        let clientY=e.clientY;
+        var clickCon=0;
+        if (parseInt(clientX/width *100)>25 && parseInt(clientX/width *100)<75){
+          if (parseInt(clientY/height *100)>30 && parseInt(clientY/height *100)<70){
+            console.log(`x:${parseInt(clientX/width *100)},y:${parseInt(clientY/height *100)}`);
+            clickCon=1;
+          }
+        }
+        if (clickCon==1){
+          this.main_log();
+        }
+        console.log(clickCon);
+      },
+      //new一个拖拽按钮
+      theDraggabilly(){
+        var draggableElems = document.querySelectorAll('.draggable');
+        var draggies = [];
+        for ( var i=0, len = draggableElems.length; i < len; i++ ) {
+          var draggableElem = draggableElems[i];
+          var draggie = new Draggabilly( draggableElem, {
+            containment: true
+          });
+          draggies.push( draggie );
+        }
+      },
+      //拖拽按钮+号的点击事件
+      main_log(val) {
+        console.log(val);
+        this.isHidden=!this.isHidden;
+        if (this.isHidden==false){
+          this.showTabbar=true;
+        } else {
+          setTimeout(() => {
+            this.showTabbar=false;
+          }, 500);
+        }
+      },
       //字体改变
       onFontChange(picker, values) {
         this.fontFamily =`couriernew, courier,${values[0]}`;
@@ -194,19 +255,22 @@
       loadBottom() {
         if (this.firstLoad){
           setTimeout(() => {
+            this.$refs.loadmore.onBottomLoaded();
+          }, 30);
+          setTimeout(() => {
+            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+          }, 31);
+          setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
             //this.loadPrevMui(-1);
-            this.$refs.loadmore.onBottomLoaded();
+            //this.$refs.loadmore.onBottomLoaded();
             this.firstLoad=false;
-          }, 800);
-          setTimeout(() => {
-            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0;
-          }, 801);
+          }, 3000);
         } else {
           setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
-            this.$refs.loadmore.onBottomLoaded();
             this.loadPrevMui(1);
+            this.$refs.loadmore.onBottomLoaded();
           }, 200);
         }
       },
@@ -408,11 +472,161 @@
             that.$mui.toast('请求失败');
           }
         });
+      },
+      novel(){
+        let selfVue=this;
+        class getNovel{
+          constructor(){
+            this.sourceId=selfVue.bookDetail;
+            this.bookReadIndex2().then(this.getNovel2).then(this.getLink2).then(this.getText2).then(function (data) {
+              //console.log(`收到：${data}`)
+            }).catch(error => {
+              console.log(error)
+            });
+          };
+          bookReadIndex2(){
+            return new Promise( (resolve, reject) =>{
+              let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+              selfVue.rangeValue=czyBooks.fontSize;//字体大小
+              //console.log(czyBooks.books.indexOf(this.bookAdd))
+              let length=czyBooks.books.length;
+              let ID=selfVue.bookDetail;
+              let index=0;
+              for (let i = 0; i < length; i++) {
+                if (czyBooks.books[i]._id ==ID){//如果等于当前id就改变当前阅读章节
+                  index=czyBooks.books[i].lastReadChapterIndex;
+                }
+              }
+              setTimeout(() => {
+                selfVue.page=index;
+                resolve();
+              },50)
+            });
+          };
+          getNovel2(){
+            return new Promise( (resolve, reject) => {
+              selfVue.$mui.ajax({
+                url : `http://api.zhuishushenqi.com/toc?view=summary&book=${selfVue.bookDetail}`,
+                data: {},
+                async: true,
+                dataType:'json',//服务器返回json格式数据
+                crossDomain: true, //强制使用5+跨域
+                type:'get',//HTTP请求类型
+                timeout:10000,//超时时间设置为10秒；
+                scriptCharset:'utf-8',
+                headers:{'Content-Type':'application/json'},
+                success:function(data){
+                  selfVue.$mui.toast('请求成功');
+                  let theData = data;
+                  let sourceId = theData.length > 1 ? theData[1]._id : theData[0]._id;
+                  for (let item of theData) {
+                    if (item.source === 'my176') {
+                      sourceId = item._id;
+                      break;
+                    }
+                  }
+                  selfVue.theParams=sourceId;
+                  resolve();//
+                },
+                error:function(xhr,type,errorThrown){
+                  //异常处理；
+                  console.log(type);
+                  selfVue.$mui.toast('请求失败');
+                }
+              });
+            });
+          };
+          getLink2() {
+            return new Promise((resolve, reject)=>{
+              selfVue.$mui.ajax({
+                url : 'http://api.zhuishushenqi.com/toc/'+selfVue.theParams+'?view=chapters',
+                data: {},
+                async: true,
+                dataType:'json',//服务器返回json格式数据
+                crossDomain: true, //强制使用5+跨域
+                type:'get',//HTTP请求类型
+                timeout:10000,//超时时间设置为10秒；
+                scriptCharset:'utf-8',
+                headers:{'Content-Type':'application/json'},
+                success:function(data){
+                  selfVue.$mui.toast('请求成功');
+                  let chapterList = data;
+                  selfVue.chapterList = chapterList.chapters;//章节列表
+                  //this.chaTitle = this.chapterList[this.page].title;
+                  selfVue.title = selfVue.chapterList[selfVue.page].title;
+                  //console.log(this.chapterList);
+                  selfVue.chapterListNew=selfVue.chapterList.slice(0,100);
+                  //selfVue.getTextMui(that.chapterList);
+                  resolve();
+                },
+                error:function(xhr,type,errorThrown){
+                  //异常处理；
+                  console.log(type);
+                  selfVue.$mui.toast('请求失败');
+                }
+              });
+            });
+          }
+          getText2() {//http://chapter2.zhuishushenqi.com
+            return new Promise((resolve, reject) => {
+              let chapters = selfVue.chapterList;
+              selfVue.currentPage = parseInt(selfVue.page / 100) + 1;
+              selfVue.handleCurrentChange(selfVue.currentPage);
+              selfVue.$mui.ajax({
+                url: `http://chapter2.zhuishushenqi.com/chapter/${encodeURIComponent(chapters[selfVue.page].link)}?k=2124b73d7e2e1945&t=1468223717)`,
+                data: {},
+                async: true,
+                dataType: 'json',//服务器返回json格式数据
+                crossDomain: true, //强制使用5+跨域
+                type: 'get',//HTTP请求类型
+                timeout: 10000,//超时时间设置为10秒；
+                scriptCharset: 'utf-8',
+                headers: {'Content-Type': 'application/json'},
+                success: function (data) {
+                  selfVue.$mui.toast('请求成功');
+                  let theData = data;
+                  if (theData.ok) {
+                    if (theData.chapter.body.indexOf('下载最新的追书神器app阅读本作') > -1) {
+                      Toast({
+                        message: '资源丢失了...',
+                        position: 'bottom',
+                        duration: 2000
+                      });
+                      return;
+                    }
+                    if (theData.chapter.body.indexOf('请安装最新版追书') > -1) {
+                      Toast({
+                        message: '资源丢失了...',
+                        position: 'bottom',
+                        duration: 2000
+                      });
+                      return;
+                    }
+                    //把回车换成br标签
+                    selfVue.bodyText = theData.chapter.body.split("\n").join("<br>");//.split("\n").join("<br>")
+                    var arr = selfVue.bodyText.split('<br>');
+                    let newText = [];//用来存储新的text文本
+                    for (var i = 0; i < arr.length; i++) {
+                      newText.push(arr[i])
+                    }
+                    selfVue.bodyText = newText;
+                    selfVue.changeBookshelf()
+                    setTimeout(() => {
+                      document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop = 0
+                    }, 200);
+                    //console.log(this.bodyText)
+                  }
+                }
+              });
+            })
+          }
+        }
+        let novel=new getNovel();
       }
     },
     created() {
       setTimeout(() => {
-        this.getNovelMui();
+        this.novel();
       }, 80);
       let that=this;
       this.$mui.back = function() {//从书架返回到娱乐页面
@@ -423,14 +637,35 @@
       }, 100);
     },
     mounted(){
+      this.theDraggabilly();
       this.bookReadIndex();
       //this.openFullScreen();
-      this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top -60;
+      this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
+    },
+    beforeRouteLeave(to,from,next){
+      this.firstLoad=true;
+      next();
     }
   }
 </script>
 
 <style scoped>
+  .particles{
+    width: 100%;
+  }
+  .draggable{
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    opacity: 0.5;
+    left: calc(100% - 60px);
+    top: calc(100% - 120px);
+  }
+  .draggable.is-pointer-down {
+    background: #09F;
+    z-index: 2000; /* above other draggies */
+  }
+  .draggable.is-dragging { opacity: 0.7; }
   .blue-class{
     background-color: antiquewhite;
     color: black;
@@ -445,7 +680,7 @@
     overflow: hidden;
   }
   .book-read-main {
-    height: calc(100% - 90px);
+    height: calc(100% - 40px);
     width: calc(100% - 0px);
     overflow-y: scroll;
     overflow-x: hidden;

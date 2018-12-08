@@ -13,6 +13,7 @@ import Mint from 'mint-ui';
 import 'mint-ui/lib/style.css';
 import DrawerLayout from 'vue-drawer-layout'
 import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/display.css';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueFroala from 'vue-froala-wysiwyg';
 import Mui from 'vue-awesome-mui';

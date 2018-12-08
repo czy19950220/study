@@ -11,7 +11,7 @@
         {{txt}}
       </pre>-->
       <div class="booksList" v-for="book in booksList" @click="toBookDetail(book._id)">
-        <img :src="book.cover" alt="">
+        <img v-lazy="book.cover" alt="" class="page-lazyload-image">
         <div class="book-title">{{book.title}}</div>
         <div class="book-lastChapter">阅读至： {{book.lastReadChapter}}</div>
         <div class="book-newChapter">更新至： {{book.newChapter2}}</div>
@@ -103,17 +103,18 @@
       getBooks(){
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
         let books=czyBooks.books;
+        let loading=0;
         for (let i = 0; i < czyBooks.books.length; i++) {
           let search = `/api/book/${czyBooks.books[i]._id}`;
           axios.get(search).then((res) => {
+            loading++;
             books[i].newChapter2=res.data.lastChapter;
+            if (loading==czyBooks.books.length){
+              this.booksList=books;
+            }
           });
           //console.log(books)
         }
-        this.openFullScreen();
-        setTimeout(() => {
-          this.booksList=books;
-        },1200)
       }
     },
     mounted(){
@@ -163,6 +164,10 @@
     height: 100%;
     width: auto;
     float: left;
+  }
+  .page-lazyload-image[lazy=loading] {
+    height: auto;
+    width: 70px;
   }
   .book-title{
     height: 23px;
