@@ -90,7 +90,7 @@
         console.log(JSON.parse(localStorage.getItem("czyBooks")))
       },
       readBook(){
-        this.$router.push('/NovelDev/NovelRead')
+        this.$router.push('/NovelDev/NovelReadTwoDev')
       },
       //转化封面url为实际url
       url2Real(url) {

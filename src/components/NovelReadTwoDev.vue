@@ -1,5 +1,6 @@
 <template>
-  <div class="book-read">
+  <!--仿真读书-->
+  <div class="book-read container" id="book-read" @click="getMousePos">
     <el-dialog
       title="设置"
       :visible.sync="centerDialogVisible"
@@ -19,6 +20,7 @@
         </span>
     </el-dialog>
     <vue-drawer-layout
+      :enable="false"
       ref="drawerLayout"
       @mask-click="handleMaskClick"
       :reverse="true">
@@ -29,7 +31,7 @@
           <el-pagination
             background
             @current-change="handleCurrentChange"
-            :current-page="currentPage"
+            :current-page="1"
             :page-size="100"
             :pager-count="5"
             layout="prev, pager, next"
@@ -54,36 +56,37 @@
           </router-link>
           <mt-button icon="more" slot="right" @click="more"></mt-button>
         </mt-header>
-        <div class="book-read-main" id="book" v-loading.fullscreen.lock="fullscreenLoading">
-          <!--文章-->
-          <div class="page-loadmore">
-            <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
-              <mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" ref="loadmore">
-                <div :class="preCon" :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}" v-for="text in bodyText" v-html="text"></div>
-                <div slot="bottom" class="mint-loadmore-bottom">
-                  <span v-show="bottomStatus !== 'loading'" :class="{ 'is-rotate': bottomStatus === 'drop' }">↑</span>
-                  <span v-show="bottomStatus === 'loading'">
-                    <mt-spinner type="snake"></mt-spinner>
-                  </span>
-                </div>
-              </mt-loadmore>
+        <!--文章-->
+        <div id="magazine" dir="ltr" @click="loadPrevClick()">
+          <div v-for="html in newHtmlArr" class="novel-page" :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}">
+            <div v-for="txt in html" v-html="txt">
             </div>
           </div>
         </div>
         <!--底部切换页面-->
-        <mt-tabbar>
-          <mt-tab-item id="上一章">
-            <mt-button type="danger" @click="loadPrev(-1)">上一章</mt-button>
-          </mt-tab-item>
-          <mt-tab-item id="设置">
-            <mt-button type="primary" @click="sheZhi()">设置</mt-button>
-          </mt-tab-item>
-          <mt-tab-item id="下一章">
-            <mt-button type="danger" @click="loadPrev(1)">下一章</mt-button>
-          </mt-tab-item>
+        <mt-tabbar style="background:none; z-index: 100" v-show="showTabbar">
+          <particle-effect-button
+            :hidden="isHidden"
+            color="rgb(50, 186, 250)"
+            :duration="500"
+            type="triangle"
+            drawStyle="stroke"
+          >
+            <mt-tab-item id="上一章" style="width: 100%;">
+              <el-button type="primary" icon="el-icon-arrow-left" @click="loadPrev(-1)" style="float: left">上一章</el-button>
+              <el-button type="primary" @click="sheZhi()">设置</el-button>
+              <el-button type="primary" @click="loadPrev(1)" style="float: right">下一章<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+            </mt-tab-item>
+          </particle-effect-button>
         </mt-tabbar>
       </div>
     </vue-drawer-layout>
+    <!--draggabilly-button-->
+    <div class="draggable" @click="main_log()">
+      <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
+        <div class="my-icon-button"></div>
+      </mt-palette-button>
+    </div>
   </div>
 </template>
 
@@ -91,10 +94,21 @@
   import axios from 'axios';
   import {Toast} from 'mint-ui';
   import {mapGetters, mapActions} from 'vuex'
+  import Draggabilly from 'draggabilly'
+  import ParticleEffectButton from 'vue-particle-effect-button'
+  import './../assets/js/turn.min'
   export default {
     name: "NovelReadTwoDev",
+    components: {
+      ParticleEffectButton
+    },
     data() {
       return {
+        vueDrawerLayout:false,//是否是打开了切换章节...
+        loadCurrentPage:1,//当前翻页的页数
+        newHtmlArr:[],//仿真书的HTML  arr
+        showTabbar:true,//下方的切换章节和设置
+        isHidden: false,//粒子按钮动画
         fontSlot: [{//字体选项
           flex: 1,
           values: ['Microsoft YaHei','华文楷体','宋体', '楷体', 'none','unset'],
@@ -106,7 +120,7 @@
         },
         centerDialogVisible:false,//设置
         rangeValue:16,
-        firstLoad:true,//首次加载
+        firstLoad:1,//首次加载
         allLoaded: false,//全部读完？
         bottomStatus: '',
         wrapperHeight: 0,
@@ -118,7 +132,7 @@
         page: 0, //章节
         bodyText: '',
         pageVal:1,//分页第几页
-        currentPage:1,//当前分页第几页
+        theParams:'111'
       }
     },
     computed: {
@@ -130,12 +144,84 @@
     watch:{
       rangeValue:{
         handler(curVal,oldVal){
-          console.log(curVal);
+          //console.log(curVal);
           this.handleChange(curVal);
         },
       }
     },
     methods: {
+      loadPrevClick(event){//阅读的手动切换章节（通过点击位置判断）
+        if (this.vueDrawerLayout){
+          return;
+        }
+        var e = event || window.event;
+        var bookRead=document.getElementById('book-read');
+        let width=$('#magazine').width();
+        let height=$('#magazine').height();
+        let clientX=e.clientX;
+        let clientY=e.clientY;
+        //console.log(clickCon);
+        //翻页到最后一个时...//阅读的手动切换章节（通过点击位置判断）
+        if (this.loadCurrentPage==$("#magazine").turn("pages")){
+          if (parseInt(clientX/width *100)>78){//如果点击的区域大于屏幕宽度的78%就doSomething....
+            this.loadPrev(1);
+          }
+        }else if (this.loadCurrentPage==1){
+          if (parseInt(clientX/width *100)<23){//如果点击的区域大于屏幕宽度的78%就doSomething....
+            this.loadPrev(-1);
+            $("#magazine").turn("page", 1);
+          }
+        }
+      },
+      //获取点击的位置
+      getMousePos(event) {
+        //console.log($("#magazine").turn("pages"))
+        var e = event || window.event;
+        var bookRead=document.getElementById('book-read');
+        let width=$('#book-read').width();
+        let height=$('#book-read').height();
+        let clientX=e.clientX;
+        let clientY=e.clientY;
+        var clickCon=0;
+        if (parseInt(clientX/width *100)>25 && parseInt(clientX/width *100)<75){
+          if (parseInt(clientY/height *100)>30 && parseInt(clientY/height *100)<70){
+            //console.log(`x:${parseInt(clientX/width *100)},y:${parseInt(clientY/height *100)}`);
+            clickCon=1;
+          } else {
+            clickCon=0;
+          }
+        } else {
+          clickCon=0;
+        }
+        if (clickCon==1){
+          this.main_log();
+        }
+        //console.log(clickCon);
+        //翻页到最后一个时...//阅读的手动切换章节（通过点击位置判断）
+      },
+      //new一个拖拽按钮
+      theDraggabilly(){
+        var draggableElems = document.querySelectorAll('.draggable');
+        var draggies = [];
+        for ( var i=0, len = draggableElems.length; i < len; i++ ) {
+          var draggableElem = draggableElems[i];
+          var draggie = new Draggabilly( draggableElem, {
+            containment: true
+          });
+          draggies.push( draggie );
+        }
+      },
+      //拖拽按钮+号的点击事件
+      main_log() {
+        this.isHidden=!this.isHidden;
+        if (this.isHidden==false){
+          this.showTabbar=true;
+        } else {
+          setTimeout(() => {
+            this.showTabbar=false;
+          }, 500);
+        }
+      },
       //字体改变
       onFontChange(picker, values) {
         this.fontFamily =`couriernew, courier,${values[0]}`;
@@ -143,10 +229,10 @@
       },
       //改变字体大小
       handleChange(value){
-        console.log(value);
+        //console.log(value);
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
         czyBooks.fontSize=value;
-        console.log(czyBooks)
+        //console.log(czyBooks)
         czyBooks=JSON.stringify(czyBooks);
         localStorage.removeItem("czyBooks");
         localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
@@ -191,23 +277,20 @@
       },
       //上拉刷新
       loadBottom() {
-        //console.log('上拉了')
-        if (this.firstLoad){
+        //console.log('上拉了...')
+        if (this.firstLoad==1){
           setTimeout(() => {
-            //this.allLoaded = true;//判断是否全部加载完毕
-            //this.loadPrev(-1);
-            console.log('第一次上拉了')
             this.$refs.loadmore.onBottomLoaded();
-            this.firstLoad=false;
-          }, 800);
+          }, 30);
           setTimeout(() => {
-            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0;
-          }, 801);
+            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+          }, 31);
+          setTimeout(() => {
+            this.firstLoad=0;
+          }, 3000);
         } else {
           setTimeout(() => {
-            console.log('不是第一次上拉了')
             //this.allLoaded = true;//判断是否全部加载完毕
-            this.$refs.loadmore.onBottomLoaded();
             this.loadPrev(1);
           }, 200);
         }
@@ -238,7 +321,8 @@
         this.getText(this.chapterList);
         this.title=title;
         this.$refs.drawerLayout.toggle(false);
-        document.getElementById("book").scrollTop=0;
+        this.vueDrawerLayout=false;
+        //document.getElementById("book").scrollTop=0;
         //this.openFullScreen();
         //console.log(this.chapterList[this.page].title);//打印出当前阅读的章节名字
       },
@@ -256,10 +340,12 @@
       handleMaskClick() {
         //console.info('mask-click');
         this.$refs.drawerLayout.toggle(false);
+        this.vueDrawerLayout=false;
       },
       //点击打开右侧框
       more(){
         this.$refs.drawerLayout.toggle();
+        this.vueDrawerLayout=true;
       },
       //获取章节和链接
       getLink(sourceId) {
@@ -319,14 +405,68 @@
                 newText.push(arr[i])
               }
               this.bodyText=newText;
-              //console.log(this.bodyText)
-              this.changeBookshelf()
-              setTimeout(() => {
+              //.........
+              //console.log(newText)
+              let newArr2=[];
+              for (let i = 0; i < this.bodyText.length; i++) {
+                let txtLength=this.bodyText[i].length;//字数？
+                let hangNum=parseInt(($('#book-read').width()-22)/this.rangeValue);//一行几个字？（总宽度-20）/ 字体大小
+                //console.log(hangNum)
+                let xxx=Math.ceil(txtLength/hangNum);//几行？ 总字数 / 一行的字数
+                let yyy=this.bodyText[i];
+                for (let i = 0; i < xxx; i++) {
+                  if (i==0){
+                    let txtHtml=`<div  style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};" class="txt-header">${yyy.substring(0,(hangNum-2))}</div>`;
+                    newArr2.push(txtHtml)
+                  } else {
+                    let x=(hangNum-2)+(i-1)*hangNum,y=(hangNum-2)+i*hangNum;
+                    let txtHtml=`<div style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};" class="txt-not-header">${yyy.substring(x,y)}</div>`
+                    newArr2.push(txtHtml)
+                  }
+                }
+              }
+              //console.log(newArr2);
+              let newArr3=[];
+              let hangAll=parseInt(($('#book-read').height()-50)/(this.rangeValue*1.5));
+              for (let i = 0; i < newArr2.length/hangAll; i++) {
+                newArr3[i]=(newArr2.slice(i*hangAll,(i+1)*hangAll))
+              }
+              //console.log(newArr3);
+              //this.newHtmlArr=newArr3;
+              //console.log(this.newHtmlArr);
+              let aWidth = $('#magazine').width();
+              let aHeight = $('#magazine').height();
+              function removeBook(){
+                let pageX=$("#magazine").turn("pages");
+                //console.log(pageX);
+                if (pageX<=1){
+                  for (let i = 0; i < newArr3.length; i++) {
+                    let htmlTxt=``;
+                    for (let j = 0; j < newArr3[i].length; j++) {
+                      htmlTxt +=newArr3[i][j];
+                    }
+                    let element = $("<div />").html(`<div style="background: white;height: 100%">${htmlTxt}</div>`);
+                    $("#magazine").turn("addPage", element, i+1);
+                  }
+                  return;
+                } else {
+                  $("#magazine").turn("removePage", pageX);
+                  removeBook();
+                }
+              }
+              removeBook();
+              /*this.$nextTick(() => {
+
+              });*/
+              //........
+              this.changeBookshelf();
+              /*setTimeout(() => {
                 document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
-              }, 200);
+              }, 200);*/
             }
           }
         }).catch((err) => {
+          console.log(err)
           Toast({
             message: '资源没找到',
             position: 'bottom',
@@ -359,9 +499,9 @@
           this.title=this.chapterList[this.page].title;
           //console.log(document.getElementById("book").scrollTop)
           //document.getElementById("book").scrollTop=0;
-          document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+          //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
           setTimeout(() => {
-            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+            //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
           }, 100);
         }
       },
@@ -393,25 +533,250 @@
           });
         });
       },
+      novel(){
+        let selfVue=this;
+        class getNovel{
+          constructor(){
+            this.sourceId=selfVue.bookDetail;
+            this.getNovel2().then(this.getLink2).then(this.getText2).then(function (data) {
+              //console.log(`收到：${data}`)
+            }).catch(error => {
+              console.log(error)
+            });
+          };
+          getNovel2(){
+            return new Promise( (resolve, reject) => {
+              axios.get('/api/toc?view=summary&book=' + this.sourceId).then((response) => {
+                //console.log(response.data)
+                if (response.status == 200) {
+                  let data = response.data;
+                  let sourceId = data.length > 1 ? data[1]._id : data[0]._id;
+                  for (let item of data) {
+                    if (item.source === 'my176') {
+                      sourceId = item._id;
+                      break;
+                    }
+                  }
+                  selfVue.theParams=sourceId;
+                  resolve();//
+                  //console.log(sourceId)
+                }
+              }).catch((err) => {
+                Toast({
+                  message: '资源没找到...',
+                  position: 'bottom',
+                  duration: 2000
+                });
+              });
+            });
+          };
+          getLink2() {
+            return new Promise((resolve, reject)=>{
+              //console.log(`收到getNovel2改变的${selfVue.theParams}`);
+              let url = '/api/toc/' + selfVue.theParams + '?view=chapters';
+              axios.get(url).then((response) => {
+                //console.log(sourceId)
+                if (response.status == 200) {
+                  let chapterList = response.data;
+                  //console.log(chapterList)
+                  selfVue.chapterList = chapterList.chapters;//章节列表
+                  selfVue.title = selfVue.chapterList[selfVue.page].title;
+                  selfVue.chapterListNew=selfVue.chapterList.slice(0,100);
+                  //selfVue.getText(this.chapterList);
+                  resolve();
+                }
+              }).catch((err) => {
+                console.log(err);
+                Toast({
+                  message: '资源没找到...',
+                  position: 'bottom',
+                  duration: 2000
+                });
+              })
+
+            });
+          }
+          getText2() {//http://chapter2.zhuishushenqi.com
+            return new Promise((resolve, reject)=>{
+              let chapters=selfVue.chapterList;
+              selfVue.currentPage=parseInt(selfVue.page/100)+1;
+              selfVue.handleCurrentChange(selfVue.currentPage);
+              //console.log(chapters)
+              axios.get(`/chapter/` + `${encodeURIComponent(chapters[selfVue.page].link)}` + `?k=2124b73d7e2e1945&t=1468223717)`).then((response) => {
+                if (response.status == 200) {
+                  let data = response.data;
+                  if (data.ok) {
+                    if (data.chapter.body.indexOf('下载最新的追书神器app阅读本作') > -1) {
+                      Toast({
+                        message: '资源丢失了...',
+                        position: 'bottom',
+                        duration: 2000
+                      });
+                      return;
+                    }
+                    if (data.chapter.body.indexOf('请安装最新版追书') > -1) {
+                      Toast({
+                        message: '资源丢失了...',
+                        position: 'bottom',
+                        duration: 2000
+                      });
+                      return;
+                    }
+                    //把回车换成br标签
+                    selfVue.bodyText = data.chapter.body.split("\n").join("<br>");//.split("\n").join("<br>")
+                    var arr = selfVue.bodyText.split('<br>');
+                    let newText=[];//用来存储新的text文本
+                    for(var i=0;i<arr.length;i++){
+                      newText.push(arr[i])
+                    }
+                    selfVue.bodyText=newText;
+                    //console.log(this.bodyText)
+                    selfVue.changeBookshelf();
+                    //......
+                    let newArr2=[];
+                    for (let i = 0; i < selfVue.bodyText.length; i++) {
+                      let txtLength=selfVue.bodyText[i].length;//字数？
+                      let xxx=Math.ceil(txtLength/12)//几行？
+                      let yyy=selfVue.bodyText[i];
+                      for (let i = 0; i < xxx; i++) {
+                        let y=0;
+                        if (i==0){
+                          let txtHtml=`<div class="txt-header">${yyy.substring(0,10)}</div>`;
+                          y +=10;
+                          newArr2.push(txtHtml)
+                        } else {
+                          let x=10+(i-1)*12,y=10+i*12;
+                          let txtHtml=`<div class="txt-not-header">${yyy.substring(x,y)}</div>`
+                          newArr2.push(txtHtml)
+                        }
+                      }
+                    }
+                    //console.log(newArr2);
+                    let newArr3=[];
+                    for (let i = 0; i < newArr2.length/14; i++) {
+                      newArr3[i]=(newArr2.slice(i*14,(i+1)*14))
+                    }
+                    //console.log(newArr3);
+                    selfVue.newHtmlArr=newArr3;
+                    //console.log(selfVue.newHtmlArr);
+                    let aWidth = $('#magazine').width();
+                    let aHeight = $('#magazine').height();
+                    //$("#magazine").turn("destroy").remove();
+                    selfVue.$nextTick(() => {
+                      //$("#magazine").turn("destroy");
+
+                      $('#magazine').turn({
+                        width: aWidth,
+                        height: aHeight,
+                        display: "single",//单双页
+                        acceleration: true,
+                        autoCenter: false,
+                        gradients: true,
+                        disable: false,
+                        when: {
+                          turning: function(event, page, pageObject) {
+                            // Implementation
+                            //console.log(page);
+                            if (page==($("#magazine").turn("pages"))) {
+                              console.log(page);
+                              selfVue.loadCurrentPage=page;
+                            }
+                          }
+                        }
+                      });
+                    });
+                    //......
+                    setTimeout(() => {
+
+                      //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+                    }, 200);
+                  }
+                }
+              }).catch((err) => {
+                Toast({
+                  message: '资源没找到',
+                  position: 'bottom',
+                  duration: 2000
+                });
+              })
+            });
+          }
+        }
+        let novel=new getNovel();
+      }
     },
     created() {
-      this.getNovel();
+      //this.getNovel();
+      this.novel();
       //console.log(this.page)
-      let that=this;
-      this.$mui.back = function() {//从书架返回到娱乐页面
-        that.$router.push('/NovelDev/NovelBookshelfDev')
-      };
     },
     mounted(){
+
+      this.theDraggabilly();
       this.bookReadIndex();
       //this.openFullScreen();
-      this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top -60;
+      //this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
+    },
+    beforeRouteLeave(to,from,next){
+      this.firstLoad=1;
+      next();
     }
   }
-
 </script>
 
 <style scoped>
+  /*#region*/
+  /*仿真读书设置*/
+  .novel-page{
+    background-color: #fff;
+  }
+  #magazine{
+    height: calc(100% - 40px);
+    margin-top: 40px;
+    width: 100%;
+  }
+  .book-con{
+    background-color: white;
+  }
+  .book-con div{
+    font-size: 28px;
+    line-height: 1.5;
+    text-align: left;
+    text-indent: 2em;
+  }
+  .txt-header{
+    text-indent: 2em;
+    text-align: left;
+    line-height: 1.5;
+  }
+  .txt-not-header{
+    text-align: left;
+    line-height: 1.5;
+  }
+  #magazine.shadow{
+    -webkit-box-shadow: 0 4px 10px #666;
+    -moz-box-shadow: 0 4px 10px #666;
+    -ms-box-shadow: 0 4px 10px #666;
+    -o-box-shadow: 0 4px 10px #666;
+    box-shadow: 0 4px 10px #666;
+  }
+  /*#endregion*/
+  .particles{
+    width: 100%;
+  }
+  .draggable{
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    opacity: 0.5;
+    left: calc(100% - 60px);
+    top: calc(100% - 120px);
+  }
+  .draggable.is-pointer-down {
+    background: #09F;
+    z-index: 2000; /* above other draggies */
+  }
+  .draggable.is-dragging { opacity: 0.7; }
   .blue-class{
     background-color: antiquewhite;
     color: black;
@@ -426,7 +791,7 @@
     overflow: hidden;
   }
   .book-read-main {
-    height: calc(100% - 90px);
+    height: calc(100% - 40px);
     width: calc(100% - 0px);
     overflow-y: scroll;
     overflow-x: hidden;
@@ -461,6 +826,7 @@
     background-color: #97d3ff;
   }
   .page-loadmore{
+
   }
   .page-loadmore .mint-spinner {
     display: inline-block;

@@ -54,8 +54,8 @@
           </router-link>
           <mt-button icon="more" slot="right" @click="more"></mt-button>
         </mt-header>
+        <!--文章-->
         <div class="book-read-main" id="book" v-loading.fullscreen.lock="fullscreenLoading">
-          <!--文章-->
           <div class="page-loadmore">
             <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
               <mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" ref="loadmore">
@@ -71,8 +71,7 @@
           </div>
         </div>
         <!--底部切换页面-->
-
-          <mt-tabbar style="background:none;" v-show="showTabbar">
+        <mt-tabbar style="background:none;" v-show="showTabbar">
             <particle-effect-button
               :hidden="isHidden"
               color="rgb(50, 186, 250)"
@@ -87,26 +86,6 @@
             </mt-tab-item>
             </particle-effect-button>
           </mt-tabbar>
-
-          <!--<mt-tabbar>
-            <particle-effect-button
-              :hidden="isHidden"
-              color="rgb(50, 186, 250)"
-              :duration="500"
-              type="triangle"
-              drawStyle="stroke"
-            >
-              <mt-tab-item id="上一章">
-                <mt-button type="danger" @click="loadPrev(-1)">上一章</mt-button>
-              </mt-tab-item>
-              <mt-tab-item id="设置">
-                <mt-button type="primary" @click="sheZhi()">设置</mt-button>
-              </mt-tab-item>
-              <mt-tab-item id="下一章">
-                <mt-button type="danger" @click="loadPrev(1)">下一章</mt-button>
-              </mt-tab-item>
-            </particle-effect-button>
-          </mt-tabbar>-->
       </div>
     </vue-drawer-layout>
     <!--draggabilly-button-->
@@ -174,6 +153,7 @@
       }
     },
     methods: {
+      //获取点击的位置
       getMousePos(event) {
         var e = event || window.event;
         var bookRead=document.getElementById('book-read');
@@ -184,7 +164,7 @@
         var clickCon=0;
         if (parseInt(clientX/width *100)>25 && parseInt(clientX/width *100)<75){
           if (parseInt(clientY/height *100)>30 && parseInt(clientY/height *100)<70){
-            console.log(`x:${parseInt(clientX/width *100)},y:${parseInt(clientY/height *100)}`);
+            //console.log(`x:${parseInt(clientX/width *100)},y:${parseInt(clientY/height *100)}`);
             clickCon=1;
           } else {
             clickCon=0;
@@ -195,7 +175,7 @@
         if (clickCon==1){
           this.main_log();
         }
-        console.log(clickCon);
+        //console.log(clickCon);
       },
       //new一个拖拽按钮
       theDraggabilly(){
@@ -400,8 +380,9 @@
                 newText.push(arr[i])
               }
               this.bodyText=newText;
-              //console.log(this.bodyText)
-              this.changeBookshelf()
+              //........
+              //........
+              this.changeBookshelf();
               setTimeout(() => {
                 document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
               }, 200);

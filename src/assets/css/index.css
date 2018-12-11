@@ -95,4 +95,14 @@ h1{
 .summary-index-new{
   height:calc(100% - 42px) !important;
 }
-
+.txt-header{
+  text-indent: 2em;
+  text-align: left;
+  line-height: 1.5;
+  padding: 0 10px;
+}
+.txt-not-header{
+  text-align: left;
+  line-height: 1.5;
+  padding: 0 10px;
+}
