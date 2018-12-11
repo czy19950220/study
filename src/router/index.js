@@ -121,6 +121,10 @@ export default new Router({
           path: 'NovelReadTwo',
           name: 'NovelReadTwo',
           component : resolve => require(['@/components/NovelReadTwo.vue'],resolve)
+        },{//阅读小说
+          path: 'NovelReadThree',
+          name: 'NovelReadThree',
+          component : resolve => require(['@/components/NovelReadThree.vue'],resolve)
         }
       ]
     },{//小说
@@ -149,6 +153,10 @@ export default new Router({
           path: 'NovelRead',
           name: 'NovelRead',
           component : resolve => require(['@/components/NovelRead.vue'],resolve)
+        },{//阅读小说翻页模式最终版
+          path: 'NovelReadDevThree',
+          name: 'NovelReadDevThree',
+          component : resolve => require(['@/components/NovelReadDevThree.vue'],resolve)
         }
       ]
     }

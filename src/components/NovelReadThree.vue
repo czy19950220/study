@@ -21,6 +21,7 @@
         </span>
     </el-dialog>
     <vue-drawer-layout
+      :enable="false"
       ref="drawerLayout"
       @mask-click="handleMaskClick"
       :reverse="true">
@@ -50,30 +51,21 @@
       <!--主内容页-->
       <div class="content" slot="content">
         <!--header-->
-        <mt-header :title=title>
+        <mt-header :title=title v-show="showTabbar">
           <router-link to="/Novel/NovelDetail" slot="left">
             <mt-button icon="back">返回</mt-button>
           </router-link>
           <mt-button icon="more" slot="right" @click="more"></mt-button>
         </mt-header>
-        <div class="book-read-main" id="book" v-loading.fullscreen.lock="fullscreenLoading">
-          <!--文章-->
-          <div class="page-loadmore">
-            <div class="page-loadmore-wrapper" ref="wrapper" :style="{ height: wrapperHeight + 'px' }">
-              <mt-loadmore :bottom-method="loadBottom" @bottom-status-change="handleBottomChange" :bottom-all-loaded="allLoaded" ref="loadmore">
-                <div :class="preCon" :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}" v-for="text in bodyText" v-html="text"></div>
-                <div slot="bottom" class="mint-loadmore-bottom">
-                  <span v-show="bottomStatus !== 'loading'" :class="{ 'is-rotate': bottomStatus === 'drop' }">↑</span>
-                  <span v-show="bottomStatus === 'loading'">
-                    <mt-spinner type="snake"></mt-spinner>
-                  </span>
-                </div>
-              </mt-loadmore>
+        <!--文章-->
+        <div id="magazine" dir="ltr" @click="loadPrevClick()">
+          <div v-for="html in newHtmlArr" class="novel-page" :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}">
+            <div v-for="txt in html" v-html="txt">
             </div>
           </div>
         </div>
         <!--底部切换页面-->
-        <mt-tabbar style="background:none;" v-show="showTabbar">
+        <mt-tabbar style="background:none; z-index: 100" v-show="showTabbar">
           <particle-effect-button
             :hidden="isHidden"
             color="rgb(50, 186, 250)"
@@ -90,11 +82,11 @@
         </mt-tabbar>
       </div>
     </vue-drawer-layout>
-    <div class="draggable" @click="main_log('点击了')">
+    <!--<div class="draggable" @click="main_log('点击了')">
       <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
         <div class="my-icon-button"></div>
       </mt-palette-button>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -104,15 +96,20 @@
   import {mapGetters, mapActions} from 'vuex'
   import Draggabilly from 'draggabilly'
   import ParticleEffectButton from 'vue-particle-effect-button'
+  import './../assets/js/turn.min'
   export default {
-    name: "NovelReadTwo",
+    name: "NovelReadThree",
     components: {
       ParticleEffectButton
     },
     data() {
       return {
-        showTabbar:true,//下方的切换章节和设置
-        isHidden: false,//粒子按钮动画
+        vueDrawerLayout:false,//是否是打开了切换章节...
+        loadCurrentPage:1,//当前翻页的页数
+        newHtmlArr:[],//仿真书的HTML  arr
+        showTabbar:false,//下方的切换章节和设置
+        showTabbarPreventDefult:1,//阻止多次点击中间的屏幕位置
+        isHidden: true,//粒子按钮动画
         fontSlot: [{//字体选项
           flex: 1,
           values: ['Microsoft YaHei','华文楷体','宋体', '楷体', 'none','unset'],
@@ -154,6 +151,29 @@
       }
     },
     methods: {
+      loadPrevClick(event){//阅读的手动切换章节（通过点击位置判断）
+        if (this.vueDrawerLayout){
+          return;
+        }
+        var e = event || window.event;
+        var bookRead=document.getElementById('book-read');
+        let width=$('#magazine').width();
+        let height=$('#magazine').height();
+        let clientX=e.clientX;
+        let clientY=e.clientY;
+        //console.log(clickCon);
+        //翻页到最后一个时...//阅读的手动切换章节（通过点击位置判断）
+        if (this.loadCurrentPage==$("#magazine").turn("pages")){
+          if (parseInt(clientX/width *100)>78){//如果点击的区域大于屏幕宽度的78%就doSomething....
+            this.loadPrevMui(1);
+          }
+        }else if (this.loadCurrentPage==1){
+          if (parseInt(clientX/width *100)<23){//如果点击的区域大于屏幕宽度的78%就doSomething....
+            this.loadPrevMui(-1);
+            $("#magazine").turn("page", 1);
+          }
+        }
+      },
       //点击屏幕中间位置的方法x:25-75,y:30-70;
       getMousePos(event) {
         var e = event || window.event;
@@ -189,6 +209,13 @@
       //拖拽按钮+号的点击事件
       main_log(val) {
         console.log(val);
+        if (this.showTabbarPreventDefult==0){
+          return;
+        }
+        this.showTabbarPreventDefult=0;
+        setTimeout(() => {
+          this.showTabbarPreventDefult=1;
+        }, 1000);
         this.isHidden=!this.isHidden;
         if (this.isHidden==false){
           this.showTabbar=true;
@@ -205,7 +232,8 @@
       },
       //改变字体大小
       handleChange(value){
-        console.log(value);
+        //console.log(value);
+        this.toChapter(this.title,this.page);
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
         czyBooks.fontSize=value;
         console.log(czyBooks)
@@ -260,7 +288,7 @@
             this.$refs.loadmore.onBottomLoaded();
           }, 30);
           setTimeout(() => {
-            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+            //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
           }, 31);
           setTimeout(() => {
             //this.allLoaded = true;//判断是否全部加载完毕
@@ -300,7 +328,8 @@
         this.getTextMui(this.chapterList);
         this.title=title;
         this.$refs.drawerLayout.toggle(false);
-        document.getElementById("book").scrollTop=0;
+        //document.getElementById("book").scrollTop=0;
+        this.vueDrawerLayout=false;
         //this.openFullScreen();
       },
       //换页
@@ -317,10 +346,12 @@
       handleMaskClick() {
         //console.info('mask-click');
         this.$refs.drawerLayout.toggle(false);
+        this.vueDrawerLayout=false;
       },
       //点击打开右侧框
       more(){
         this.$refs.drawerLayout.toggle();
+        this.vueDrawerLayout=true;
       },
       //获取章节和链接
       getLinkMui(sourceId) {
@@ -395,9 +426,59 @@
                 newText.push(arr[i])
               }
               that.bodyText=newText;
+              //#region
+              let newArr2=[];
+              for (let i = 0; i < that.bodyText.length; i++) {
+                let txtLength=that.bodyText[i].length;//字数？
+                let hangNum=parseInt(($('#book-read').width()-22)/that.rangeValue);//一行几个字？（总宽度-20）/ 字体大小
+                //console.log(hangNum)
+                let xxx=Math.ceil(txtLength/hangNum);//几行？ 总字数 / 一行的字数
+                let yyy=that.bodyText[i];
+                for (let i = 0; i < xxx; i++) {
+                  if (i==0){
+                    let txtHtml=`<div  style="font-size: ${that.rangeValue}px;font-family: ${that.myFontFamily};" class="txt-header">${yyy.substring(0,(hangNum-2))}</div>`;
+                    newArr2.push(txtHtml)
+                  } else {
+                    let x=(hangNum-2)+(i-1)*hangNum,y=(hangNum-2)+i*hangNum;
+                    let txtHtml=`<div style="font-size: ${that.rangeValue}px;font-family: ${that.myFontFamily};" class="txt-not-header">${yyy.substring(x,y)}</div>`
+                    newArr2.push(txtHtml)
+                  }
+                }
+              }
+              //console.log(newArr2);
+              let newArr3=[];
+              let hangAll=parseInt(($('#book-read').height())/(that.rangeValue*1.5));
+              for (let i = 0; i < newArr2.length/hangAll; i++) {
+                newArr3[i]=(newArr2.slice(i*hangAll,(i+1)*hangAll))
+              }
+              //console.log(newArr3);
+              //this.newHtmlArr=newArr3;
+              //console.log(this.newHtmlArr);
+              let aWidth = $('#magazine').width();
+              let aHeight = $('#magazine').height();
+              function removeBook(){
+                let pageX=$("#magazine").turn("pages");
+                //console.log(pageX);
+                if (pageX<=1){
+                  for (let i = 0; i < newArr3.length; i++) {
+                    let htmlTxt=``;
+                    for (let j = 0; j < newArr3[i].length; j++) {
+                      htmlTxt +=newArr3[i][j];
+                    }
+                    let element = $("<div />").html(`<div style="background: white;height: 100%">${htmlTxt}</div>`);
+                    $("#magazine").turn("addPage", element, i+1);
+                  }
+                  return;
+                } else {
+                  $("#magazine").turn("removePage", pageX);
+                  removeBook();
+                }
+              }
+              removeBook();
+              //#endregion
               that.changeBookshelf()
               setTimeout(() => {
-                document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+                //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
               }, 200);
               //console.log(this.bodyText)
             }
@@ -435,9 +516,9 @@
           this.title=this.chapterList[this.page].title;
           //console.log(document.getElementById("book").scrollTop)
           //document.getElementById("book").scrollTop=0;
-          document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+          //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
           setTimeout(() => {
-            document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+            //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
           }, 100);
         }
       },
@@ -613,8 +694,65 @@
                     }
                     selfVue.bodyText = newText;
                     selfVue.changeBookshelf()
+                    //#region
+                    let newArr2=[];
+                    for (let i = 0; i < selfVue.bodyText.length; i++) {
+                      let txtLength=selfVue.bodyText[i].length;//字数？
+                      let xxx=Math.ceil(txtLength/12)//几行？
+                      let yyy=selfVue.bodyText[i];
+                      for (let i = 0; i < xxx; i++) {
+                        let y=0;
+                        if (i==0){
+                          let txtHtml=`<div class="txt-header">${yyy.substring(0,10)}</div>`;
+                          y +=10;
+                          newArr2.push(txtHtml)
+                        } else {
+                          let x=10+(i-1)*12,y=10+i*12;
+                          let txtHtml=`<div class="txt-not-header">${yyy.substring(x,y)}</div>`
+                          newArr2.push(txtHtml)
+                        }
+                      }
+                    }
+                    //console.log(newArr2);
+                    let newArr3=[];
+                    for (let i = 0; i < newArr2.length/14; i++) {
+                      newArr3[i]=(newArr2.slice(i*14,(i+1)*14))
+                    }
+                    //console.log(newArr3);
+                    selfVue.newHtmlArr=newArr3;
+                    //console.log(selfVue.newHtmlArr);
+                    let aWidth = $('#magazine').width();
+                    let aHeight = $('#magazine').height();
+                    //$("#magazine").turn("destroy").remove();
+                    selfVue.$nextTick(() => {
+                      //$("#magazine").turn("destroy");
+
+                      $('#magazine').turn({
+                        width: aWidth,
+                        height: aHeight,
+                        display: "single",//单双页
+                        acceleration: true,
+                        autoCenter: false,
+                        gradients: true,
+                        disable: false,
+                        duration:300,
+                        when: {
+                          turning: function(event, page, pageObject) {
+                            // Implementation
+                            //console.log(page);
+                            if (page==($("#magazine").turn("pages"))) {
+                              console.log(page);
+                              selfVue.loadCurrentPage=page;
+                            }
+                          }
+                        }
+                      });
+                    });
+                    //#endregion
                     setTimeout(() => {
-                      document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop = 0
+                      let index=selfVue.page-(selfVue.pageVal-1)*100;
+                      selfVue.toChapterMui(selfVue.title,index);
+                      //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop = 0
                     }, 200);
                     //console.log(this.bodyText)
                   }
@@ -635,14 +773,14 @@
         that.$router.push('/Novel/NovelBookshelf')
       };
       setTimeout(() => {
-        document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
+        //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
       }, 100);
     },
     mounted(){
-      this.theDraggabilly();
+      //this.theDraggabilly();
       this.bookReadIndex();
       //this.openFullScreen();
-      this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
+      //this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
     },
     beforeRouteLeave(to,from,next){
       this.firstLoad=true;
@@ -652,6 +790,41 @@
 </script>
 
 <style scoped>
+  /*#region*/
+  /*仿真读书设置*/
+  .novel-page{
+    background-color: #fff;
+  }
+  #magazine{
+    height: 100% !important;
+    width: 100%;
+  }
+  .book-con{
+    background-color: white;
+  }
+  .book-con div{
+    font-size: 28px;
+    line-height: 1.5;
+    text-align: left;
+    text-indent: 2em;
+  }
+  .txt-header{
+    text-indent: 2em;
+    text-align: left;
+    line-height: 1.5;
+  }
+  .txt-not-header{
+    text-align: left;
+    line-height: 1.5;
+  }
+  #magazine.shadow{
+    -webkit-box-shadow: 0 4px 10px #666;
+    -moz-box-shadow: 0 4px 10px #666;
+    -ms-box-shadow: 0 4px 10px #666;
+    -o-box-shadow: 0 4px 10px #666;
+    box-shadow: 0 4px 10px #666;
+  }
+  /*#endregion*/
   .particles{
     width: 100%;
   }

@@ -42,7 +42,7 @@
     name: "NovelSearch",
     data() {
       return {
-        query: '我爱你',
+        query: '',
         searchResult: [],
       }
     },
