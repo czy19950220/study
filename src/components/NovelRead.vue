@@ -43,7 +43,7 @@
           v-for="(chapter,index) in chapterListNew"
           @click="toChapter(chapter.title,index)"
           :class="((index+(pageVal-1)*100) == page)? 'blue-class':'red-class'"
-          :key="chapter.title">
+          :key="index">
           <mt-cell :title="chapter.title"/>
         </div>
       </div>
@@ -211,7 +211,7 @@
       handleChange(value){
         //console.log(value);
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
-        czyBooks.fontSize=value;
+        czyBooks.fontSize=parseInt(value);
         //console.log(czyBooks)
         czyBooks=JSON.stringify(czyBooks);
         localStorage.removeItem("czyBooks");
@@ -577,7 +577,7 @@
     created() {
       //this.getNovel();
       this.novel();
-      //console.log(this.page)
+      console.log(JSON.parse(localStorage.getItem("czyBooks")))
     },
     mounted(){
       this.theDraggabilly();

@@ -28,6 +28,7 @@
     "vue": "^2.5.2",
     "vue-awesome-mui": "^1.7.3",
     "vue-axios": "^2.1.2",
+    "vue-color-picker-wheel": "^0.4.1",
     "vue-drawer-layout": "^0.3.1",
     "vue-froala-wysiwyg": "^2.8.4",
     "vue-particle-effect-button": "^1.0.2",

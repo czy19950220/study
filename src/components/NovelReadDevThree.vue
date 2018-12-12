@@ -1,6 +1,6 @@
 <template>
   <!--仿真读书-->
-  <div class="book-read container" id="book-read" @click="getMousePos">
+  <div class="book-read container" id="book-read" @click="getMousePos" @swipeleft="swipeLeft" @swiperight="swipeRight">
     <el-dialog
       title="设置"
       :visible.sync="centerDialogVisible"
@@ -16,6 +16,15 @@
       </mt-range>
       <router-link to="/NovelDev/NovelRead"><el-button>滚动阅读</el-button></router-link>
       <router-link to="/NovelDev/NovelReadDevThree"><el-button>翻页阅读</el-button></router-link>
+      <color-picker v-model="color"></color-picker>
+      <p>
+        字体Color:
+        <input v-model="color" type="text">
+      </p>
+      <p>
+        背景图:
+        <input v-model="bgImg" type="text">
+      </p>
       <!--<span>字体：</span>
       <mt-picker :slots="fontSlot" @change="onFontChange" :visible-item-count="3"></mt-picker>-->
       <span slot="footer" class="dialog-footer">
@@ -45,7 +54,7 @@
           v-for="(chapter,index) in chapterListNew"
           @click="toChapter(chapter.title,index)"
           :class="((index+(pageVal-1)*100) == page)? 'blue-class':'red-class'"
-          :key="chapter.title">
+          :key="index">
           <mt-cell :title="chapter.title"/>
         </div>
       </div>
@@ -99,13 +108,17 @@
   import Draggabilly from 'draggabilly'
   import ParticleEffectButton from 'vue-particle-effect-button'
   import './../assets/js/turn.min'
+  import ColorPicker from 'vue-color-picker-wheel';
   export default {
     name: "NovelReadDevThree",
     components: {
-      ParticleEffectButton
+      ParticleEffectButton,
+      ColorPicker
     },
     data() {
       return {
+        bgImg:'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg.jpg',//背景图
+        color: '#000000',//字体颜色
         vueDrawerLayout:false,//是否是打开了切换章节...
         loadCurrentPage:1,//当前翻页的页数
         newHtmlArr:[],//仿真书的HTML  arr
@@ -148,11 +161,53 @@
       rangeValue:{
         handler(curVal,oldVal){
           //console.log(curVal);
-          this.handleChange(curVal);
+          if (this.firstLoad==1){
+            setTimeout(() => {
+              this.handleChange(curVal);
+            }, 1500);
+          } else {
+            this.handleChange(curVal);
+          }
         },
+      },
+      color: {
+        handler(curVal, oldVal) {
+          setTimeout(() => {
+            let index=this.page-(this.pageVal-1)*100;
+            this.toChapter(this.title,index);
+          }, 300);
+        }
+      },
+      bgImg:{
+        handler(curVal, oldVal) {
+          setTimeout(() => {
+            let index=this.page-(this.pageVal-1)*100;
+            this.toChapter(this.title,index);
+          }, 300);
+        }
       }
     },
     methods: {
+      //屏幕左滑
+      swipeLeft(){
+        if (this.loadCurrentPage==$("#magazine").turn("pages")){
+          this.loadPrev(1);
+        }else {
+          $("#magazine").turn("next");
+        }
+        console.log('-----');
+        console.log($("#magazine").turn("pages"));
+        console.log(this.loadCurrentPage);
+      },
+      //屏幕右滑
+      swipeRight(){
+        console.log('右滑');
+        if (this.loadCurrentPage==1){
+          this.loadPrev(-1);
+        }else {
+          $("#magazine").turn("previous");
+        }
+      },
       loadPrevClick(event){//阅读的手动切换章节（通过点击位置判断）
         if (this.vueDrawerLayout){
           return;
@@ -240,10 +295,11 @@
       },
       //改变字体大小
       handleChange(value){
+        let index=this.page-(this.pageVal-1)*100;
         //console.log(value);
-        this.toChapter(this.title,this.page);
+        this.toChapter(this.title,index);
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
-        czyBooks.fontSize=value;
+        czyBooks.fontSize=parseInt(value);
         //console.log(czyBooks)
         czyBooks=JSON.stringify(czyBooks);
         localStorage.removeItem("czyBooks");
@@ -341,12 +397,12 @@
       //换页
       handleCurrentChange(val) {
         this.chapterListNew=this.chapterList.slice((val-1)*100,(val)*100);
-        //console.log(`当前页: ${val}`);
+        //console.log(`: ${val}`);
         //console.log(this.chapterListNew);
         this.pageVal=val;
         setTimeout(() => {
           document.getElementById('drawer-book').scrollTop=document.getElementsByClassName('blue-class')[0].offsetTop;
-        },50);
+        },200);
       },
       //点击关闭右侧框
       handleMaskClick() {
@@ -389,6 +445,7 @@
         //console.log(chapters[this.page].title)
         this.currentPage=parseInt(this.page/100)+1;
         this.handleCurrentChange(this.currentPage);
+        //console.log(chapters[this.page].link)
         axios.get(`/chapter/` + `${encodeURIComponent(chapters[this.page].link)}` + `?k=2124b73d7e2e1945&t=1468223717)`).then((response) => {
           if (response.status == 200) {
             let data = response.data;
@@ -448,6 +505,7 @@
               //console.log(this.newHtmlArr);
               let aWidth = $('#magazine').width();
               let aHeight = $('#magazine').height();
+              let that=this;
               function removeBook(){
                 let pageX=$("#magazine").turn("pages");
                 //console.log(pageX);
@@ -457,8 +515,15 @@
                     for (let j = 0; j < newArr3[i].length; j++) {
                       htmlTxt +=newArr3[i][j];
                     }
-                    let element = $("<div />").html(`<div style="background-image: url('http://bpic.588ku.com/back_pic/05/68/76/365b8d2d252e91a.jpg!/fh/300/quality/90/unsharp/true/compress/true');background-size:cover;height: 100%;color: black">${htmlTxt}</div>`);
-                    $("#magazine").turn("addPage", element, i+1);
+                    if (newArr3.length==1){
+                      for (let x = 0; x < 2; x++) {
+                        let element = $("<div />").html(`<div style="background-color: white;background-image: url(${that.bgImg});background-size:cover;height: 100%;color: ${that.color};">${htmlTxt}</div>`);
+                        $("#magazine").turn("addPage", element, x+1);
+                      }
+                    }else {
+                      let element = $("<div />").html(`<div style="background-color: white;background-image: url(${that.bgImg});background-size:cover;height: 100%;color: ${that.color};">${htmlTxt}</div>`);
+                      $("#magazine").turn("addPage", element, i+1);
+                    }
                   }
                   return;
                 } else {
@@ -488,6 +553,7 @@
       },
       //上/下一章
       loadPrev(num){
+        this.loadCurrentPage=1;
         //this.openFullScreen();
         this.page =this.page+num;
         if (this.page<0){
@@ -612,8 +678,8 @@
             return new Promise((resolve, reject)=>{
               let chapters=selfVue.chapterList;
               selfVue.currentPage=parseInt(selfVue.page/100)+1;
-              console.log(selfVue.currentPage)
-              selfVue.handleCurrentChange(selfVue.currentPage);
+              //console.log(selfVue.currentPage)
+              //selfVue.handleCurrentChange(selfVue.currentPage);
               //console.log(chapters)
               axios.get(`/chapter/` + `${encodeURIComponent(chapters[selfVue.page].link)}` + `?k=2124b73d7e2e1945&t=1468223717)`).then((response) => {
                 if (response.status == 200) {
@@ -686,15 +752,12 @@
                         autoCenter: false,
                         gradients: true,
                         disable: false,
-                        duration:300,
+                        duration:200,
                         when: {
                           turning: function(event, page, pageObject) {
                             // Implementation
                             //console.log(page);
-                            if (page==($("#magazine").turn("pages"))) {
-                              console.log(page);
-                              selfVue.loadCurrentPage=page;
-                            }
+                            selfVue.loadCurrentPage=page;
                           }
                         }
                       });

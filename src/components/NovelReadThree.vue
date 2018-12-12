@@ -1,5 +1,5 @@
 <template>
-  <div class="book-read container" id="book-read" @click="getMousePos">
+  <div class="book-read container" id="book-read" @click="getMousePos" @swipeleft="swipeLeft" @swiperight="swipeRight">
     <el-dialog
       title="设置"
       :visible.sync="centerDialogVisible"
@@ -15,6 +15,15 @@
       </mt-range>
       <router-link to="/Novel/NovelReadTwo"><el-button>滚动阅读</el-button></router-link>
       <router-link to="/Novel/NovelReadThree"><el-button>翻页阅读</el-button></router-link>
+      <color-picker v-model="color"></color-picker>
+      <p>
+        字体Color:
+        <input v-model="color" type="text">
+      </p>
+      <p>
+        背景图:
+        <input v-model="bgImg" type="text">
+      </p>
       <!--<span>字体：</span>
       <mt-picker :slots="fontSlot" @change="onFontChange" :visible-item-count="3"></mt-picker>-->
       <span slot="footer" class="dialog-footer">
@@ -44,7 +53,7 @@
           v-for="(chapter,index) in chapterListNew"
           @click="toChapterMui(chapter.title,index)"
           :class="((index+(pageVal-1)*100) == page)? 'blue-class':'red-class'"
-          :key="chapter.title">
+          :key="index">
           <mt-cell :title="chapter.title"/>
         </div>
       </div>
@@ -97,13 +106,17 @@
   import Draggabilly from 'draggabilly'
   import ParticleEffectButton from 'vue-particle-effect-button'
   import './../assets/js/turn.min'
+  import ColorPicker from 'vue-color-picker-wheel';
   export default {
     name: "NovelReadThree",
     components: {
-      ParticleEffectButton
+      ParticleEffectButton,
+      ColorPicker
     },
     data() {
       return {
+        bgImg:'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg.jpg',//背景图
+        color: '#000000',//字体颜色
         vueDrawerLayout:false,//是否是打开了切换章节...
         loadCurrentPage:1,//当前翻页的页数
         newHtmlArr:[],//仿真书的HTML  arr
@@ -145,12 +158,53 @@
     watch:{
       rangeValue:{
         handler(curVal,oldVal){
-          console.log(curVal);
-          this.handleChange(curVal);
+          //console.log(curVal);
+          if (this.firstLoad==true){
+            setTimeout(() => {
+              this.handleChange(curVal);
+            }, 1500);
+          } else {
+            this.handleChange(curVal);
+          }
         },
+      },
+      color: {
+        handler(curVal, oldVal) {
+          setTimeout(() => {
+            let index=this.page-(this.pageVal-1)*100;
+            this.toChapterMui(this.title,index);
+          }, 300);
+        }
+      },
+      bgImg:{
+        handler(curVal, oldVal) {
+          setTimeout(() => {
+            let index=this.page-(this.pageVal-1)*100;
+            this.toChapterMui(this.title,index);
+          }, 300);
+        }
       }
     },
     methods: {
+      //向左滑动
+      swipeLeft(){
+        if (this.loadCurrentPage==$("#magazine").turn("pages")){
+          this.loadPrevMui(1);
+        }else {
+          $("#magazine").turn("next");
+        }
+        console.log('-----');
+        console.log($("#magazine").turn("pages"));
+        console.log(this.loadCurrentPage);
+      },
+      //向右滑动
+      swipeRight(){
+        if (this.loadCurrentPage==1){
+          this.loadPrevMui(-1);
+        }else {
+          $("#magazine").turn("previous");
+        }
+      },
       loadPrevClick(event){//阅读的手动切换章节（通过点击位置判断）
         if (this.vueDrawerLayout){
           return;
@@ -192,7 +246,7 @@
         if (clickCon==1){
           this.main_log();
         }
-        console.log(clickCon);
+        //console.log(clickCon);
       },
       //new一个拖拽按钮
       theDraggabilly(){
@@ -233,7 +287,8 @@
       //改变字体大小
       handleChange(value){
         //console.log(value);
-        this.toChapter(this.title,this.page);
+        let index=this.page-(this.pageVal-1)*100;
+        this.toChapterMui(this.title,index);
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
         czyBooks.fontSize=value;
         console.log(czyBooks)
@@ -399,7 +454,7 @@
           scriptCharset:'utf-8',
           headers:{'Content-Type':'application/json'},
           success:function(data){
-            that.$mui.toast('请求成功');
+            //that.$mui.toast('请求成功');
             let theData=data;
             if (theData.ok) {
               if (theData.chapter.body.indexOf('下载最新的追书神器app阅读本作') > -1) {
@@ -465,8 +520,15 @@
                     for (let j = 0; j < newArr3[i].length; j++) {
                       htmlTxt +=newArr3[i][j];
                     }
-                    let element = $("<div />").html(`<div style="background: white;height: 100%">${htmlTxt}</div>`);
-                    $("#magazine").turn("addPage", element, i+1);
+                    if (newArr3.length==1){
+                      for (let x = 0; x < 2; x++) {
+                        let element = $("<div />").html(`<div style="background-color: white;background-image: url(${that.bgImg});background-size:cover;height: 100%;color: ${that.color};">${htmlTxt}</div>`);
+                        $("#magazine").turn("addPage", element, x+1);
+                      }
+                    }else {
+                      let element = $("<div />").html(`<div style="background-color: white;background-image: url(${that.bgImg});background-size:cover;height: 100%;color: ${that.color};">${htmlTxt}</div>`);
+                      $("#magazine").turn("addPage", element, i+1);
+                    }
                   }
                   return;
                 } else {
@@ -476,7 +538,7 @@
               }
               removeBook();
               //#endregion
-              that.changeBookshelf()
+              that.changeBookshelf();
               setTimeout(() => {
                 //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
               }, 200);
@@ -492,6 +554,7 @@
       },
       //上/下一章
       loadPrevMui(num){
+        this.loadCurrentPage=1;
         this.allLoaded = false;
         //this.openFullScreen();
         this.page =this.page+num;
@@ -524,6 +587,7 @@
       },
       //获取小说
       getNovelMui(){
+        this.loadCurrentPage=1;
         let that=this;
         this.$mui.ajax({
           url : `http://api.zhuishushenqi.com/toc?view=summary&book=${that.bookDetail}`,
@@ -735,15 +799,12 @@
                         autoCenter: false,
                         gradients: true,
                         disable: false,
-                        duration:300,
+                        duration:200,
                         when: {
                           turning: function(event, page, pageObject) {
                             // Implementation
                             //console.log(page);
-                            if (page==($("#magazine").turn("pages"))) {
-                              console.log(page);
-                              selfVue.loadCurrentPage=page;
-                            }
+                            selfVue.loadCurrentPage=page;
                           }
                         }
                       });
