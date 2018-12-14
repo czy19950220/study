@@ -99,10 +99,16 @@ h1{
   text-indent: 2em;
   text-align: left;
   line-height: 1.5;
-  padding: 0 10px;
+  margin: auto;
 }
 .txt-not-header{
   text-align: left;
   line-height: 1.5;
-  padding: 0 10px;
+  margin: auto;
+}
+.novel-page-con{
+  padding: 46px 0px 34px;
+  background-color: white;
+  background-size:cover;
+  height: 100%;
 }

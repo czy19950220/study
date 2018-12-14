@@ -25,8 +25,6 @@
         背景图:
         <input v-model="bgImg" type="text">
       </p>
-      <!--<span>字体：</span>
-      <mt-picker :slots="fontSlot" @change="onFontChange" :visible-item-count="3"></mt-picker>-->
       <span slot="footer" class="dialog-footer">
         </span>
     </el-dialog>
@@ -117,7 +115,7 @@
     },
     data() {
       return {
-        bgImg:'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg.jpg',//背景图
+        bgImg:'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg5.jpg',//背景图
         color: '#000000',//字体颜色
         vueDrawerLayout:false,//是否是打开了切换章节...
         loadCurrentPage:1,//当前翻页的页数
@@ -175,6 +173,7 @@
           setTimeout(() => {
             let index=this.page-(this.pageVal-1)*100;
             this.toChapter(this.title,index);
+            this.onFontColorChange(curVal)
           }, 300);
         }
       },
@@ -183,6 +182,7 @@
           setTimeout(() => {
             let index=this.page-(this.pageVal-1)*100;
             this.toChapter(this.title,index);
+            this.bgImgChange(curVal);
           }, 300);
         }
       }
@@ -195,13 +195,13 @@
         }else {
           $("#magazine").turn("next");
         }
-        console.log('-----');
+        /*console.log('-----');
         console.log($("#magazine").turn("pages"));
-        console.log(this.loadCurrentPage);
+        console.log(this.loadCurrentPage);*/
       },
       //屏幕右滑
       swipeRight(){
-        console.log('右滑');
+        //console.log('右滑');
         if (this.loadCurrentPage==1){
           this.loadPrev(-1);
         }else {
@@ -228,6 +228,14 @@
           if (parseInt(clientX/width *100)<23){//如果点击的区域大于屏幕宽度的78%就doSomething....
             this.loadPrev(-1);
             $("#magazine").turn("page", 1);
+          }else if (parseInt(clientX/width *100)>78){//如果点击的区域大于屏幕宽度的78%就doSomething....
+            $("#magazine").turn("next");
+          }
+        }else {
+          if (parseInt(clientX/width *100)>78){//如果点击的区域大于屏幕宽度的78%就doSomething....
+            $("#magazine").turn("next");
+          }else if (parseInt(clientX/width *100)<23){//如果点击的区域大于屏幕宽度的78%就doSomething....
+            $("#magazine").turn("previous");
           }
         }
 
@@ -288,10 +296,23 @@
           }, 500);
         }
       },
-      //字体改变
-      onFontChange(picker, values) {
-        this.fontFamily =`couriernew, courier,${values[0]}`;
-        console.log(this.fontFamily)
+      //字体color改变
+      onFontColorChange(values) {
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        czyBooks.fontColor=values;
+        //console.log(czyBooks)
+        czyBooks=JSON.stringify(czyBooks);
+        localStorage.removeItem("czyBooks");
+        localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
+      },
+      //阅读背景改变
+      bgImgChange(values){
+        let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
+        czyBooks.bgImg=values;
+        //console.log(czyBooks)
+        czyBooks=JSON.stringify(czyBooks);
+        localStorage.removeItem("czyBooks");
+        localStorage.setItem("czyBooks",czyBooks);//以“czyBooks”为名称存储书籍
       },
       //改变字体大小
       handleChange(value){
@@ -309,6 +330,8 @@
       bookReadIndex(){
         let czyBooks=JSON.parse(localStorage.getItem("czyBooks"));
         this.rangeValue=czyBooks.fontSize;
+        this.bgImg=czyBooks.bgImg ||  'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg5.jpg';
+        this.color=czyBooks.fontColor || '#000000';
         //console.log(czyBooks)
         let length=czyBooks.books.length;
         let that=this;
@@ -485,18 +508,18 @@
                 let yyy=this.bodyText[i];
                 for (let i = 0; i < xxx; i++) {
                   if (i==0){
-                    let txtHtml=`<div  style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};" class="txt-header">${yyy.substring(0,(hangNum-2))}</div>`;
+                    let txtHtml=`<div  style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};width: ${hangNum*this.rangeValue}px;" class="txt-header">${yyy.substring(0,(hangNum-2))}</div>`;
                     newArr2.push(txtHtml)
                   } else {
                     let x=(hangNum-2)+(i-1)*hangNum,y=(hangNum-2)+i*hangNum;
-                    let txtHtml=`<div style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};" class="txt-not-header">${yyy.substring(x,y)}</div>`
+                    let txtHtml=`<div style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};width: ${hangNum*this.rangeValue}px;" class="txt-not-header">${yyy.substring(x,y)}</div>`
                     newArr2.push(txtHtml)
                   }
                 }
               }
               //console.log(newArr2);
               let newArr3=[];
-              let hangAll=parseInt(($('#book-read').height())/(this.rangeValue*1.5));
+              let hangAll=parseInt(($('#book-read').height()-80)/(this.rangeValue*1.5));//几行？总高度/ 一行的高度
               for (let i = 0; i < newArr2.length/hangAll; i++) {
                 newArr3[i]=(newArr2.slice(i*hangAll,(i+1)*hangAll))
               }
@@ -517,11 +540,11 @@
                     }
                     if (newArr3.length==1){
                       for (let x = 0; x < 2; x++) {
-                        let element = $("<div />").html(`<div style="background-color: white;background-image: url(${that.bgImg});background-size:cover;height: 100%;color: ${that.color};">${htmlTxt}</div>`);
+                        let element = $("<div />").html(`<div class="novel-page-con" style="background-image: url(${that.bgImg});color: ${that.color};">${htmlTxt}</div>`);
                         $("#magazine").turn("addPage", element, x+1);
                       }
                     }else {
-                      let element = $("<div />").html(`<div style="background-color: white;background-image: url(${that.bgImg});background-size:cover;height: 100%;color: ${that.color};">${htmlTxt}</div>`);
+                      let element = $("<div />").html(`<div class="novel-page-con" style="background-image: url(${that.bgImg});color: ${that.color};">${htmlTxt}</div>`);
                       $("#magazine").turn("addPage", element, i+1);
                     }
                   }
@@ -575,12 +598,6 @@
         }else {
           this.getText(this.chapterList);
           this.title=this.chapterList[this.page].title;
-          //console.log(document.getElementById("book").scrollTop)
-          //document.getElementById("book").scrollTop=0;
-          //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
-          setTimeout(() => {
-            //document.getElementsByClassName('page-loadmore-wrapper')[0].scrollTop=0
-          }, 100);
         }
       },
       //获取小说
