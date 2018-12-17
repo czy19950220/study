@@ -109,6 +109,11 @@ h1{
 .novel-page-con{
   padding: 46px 0px 34px;
   background-color: white;
-  background-size:cover;
+  background-size: 100% 100%;
   height: 100%;
+}
+#magazine .page{
+  background-color: white;
+  background-image: url('https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg5.jpg');
+  background-size: 100% 100%;
 }
