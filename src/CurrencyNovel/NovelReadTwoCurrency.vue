@@ -812,6 +812,10 @@
       //this.getNovel();
       this.novel();
       //console.log(this.page)
+      let that=this;
+      this.$mui.back = function() {//从阅读到书架
+        that.$router.push('/NovelTongYong/NovelBookShelfCurrency')
+      };
     },
     mounted(){
 

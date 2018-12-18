@@ -585,6 +585,10 @@
       //this.getNovel();
       this.novel();
       //console.log(JSON.parse(localStorage.getItem("czyBooks")))
+      let that=this;
+      this.$mui.back = function() {//从阅读到书架
+        that.$router.push('/NovelTongYong/NovelBookShelfCurrency')
+      };
     },
     mounted(){
       this.theDraggabilly();

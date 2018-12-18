@@ -119,6 +119,7 @@ export default {
     getBook(){
       let search = `${this.GLOBAL.kuaYu}http://api.zhuishushenqi.com/book/${this.bookDetail}`;
       axios.get(search).then((res) => {
+        //console.log(search)
         this.book = res.data;
         this.book.cover = this.book.cover ? this.url2Real(this.book.cover) : '../assets/imgs/err.png';
         this.book.wordCount = this.book.wordCount ? this.wordCount2Str(this.book.wordCount) :0;
@@ -139,6 +140,10 @@ export default {
     this.getBook();
   },
   created(){
+    let that=this;
+    this.$mui.back = function() {//从详情到书架
+      that.$router.push('/NovelTongYong/NovelBookShelfCurrency')
+    };
     /*let that=this;
     //设置1.5s后判断
     setTimeout(function () {

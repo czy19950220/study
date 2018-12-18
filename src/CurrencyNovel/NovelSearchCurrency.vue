@@ -89,7 +89,7 @@
       },
       toBook(result) {
         this.bookDetailChange(result._id);
-        this.$router.push('/NovelDev/NovelDetailDev')
+        this.$router.push('/NovelTongYong/NovelDetailCurrency')
       }
     },
     mounted() {
@@ -99,7 +99,7 @@
     created(){
       let that=this;
       this.$mui.back = function() {//从书架返回到娱乐页面
-        that.$router.push('/NovelDev/NovelBookshelfDev')
+        that.$router.push('/NovelTongYong/NovelBookShelfCurrency')
       };
     }
   }
