@@ -1,7 +1,7 @@
 <script>
   /*自定义一些全局配置*/
   const serverIp='http://192.168.99.45:3003/';
-  const htmlJson='http://pdae2q9v2.bkt.clouddn.com/html.json';
+  const htmlJson='https://czy-1257069199.cos.ap-beijing.myqcloud.com/html/test/app/html.json';
   const validateMany = (rule, value, callback) => {
     var that=this;
     var patrn=/^^[a-zA-Z0-9_\u4e00-\u9fa5]{1,20}$/;
