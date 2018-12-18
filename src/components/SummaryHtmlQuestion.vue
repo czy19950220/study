@@ -1,5 +1,5 @@
 <template>
-  <div style="height: calc(100% - 20px);width: calc(100% - 20px);word-break: break-all;overflow-x: hidden;padding: 10px;">
+  <div style="height: calc(100% - 20px);width: calc(100% - 0px);word-break: break-all;overflow-x: hidden;padding: 10px;padding-bottom: 0px">
     <el-row class="demo-autocomplete">
       <el-col :span="24">
         <el-autocomplete

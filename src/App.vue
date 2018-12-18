@@ -26,7 +26,7 @@
       font(){
         let myFont = localStorage.getItem("fontFamily");
         if (myFont==null || myFont=='' || myFont==undefined){
-          localStorage.setItem("fontFamily",'FangZhengMiaoWu');//默认汉仪细行楷
+          localStorage.setItem("fontFamily",'unset');//默认汉仪细行楷
         } else {
           this.myFontFamilyChange(myFont);
         }
@@ -49,6 +49,6 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    font-family: 'FangZhengMiaoWu';
+    font-family: 'unset';
   }
 </style>

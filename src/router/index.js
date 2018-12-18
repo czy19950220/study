@@ -6,6 +6,7 @@ import Summary from '@/views/Summary'
 import Entertainment from '@/views/Entertainment'
 import Novel from '@/views/Novel'
 import NovelDev from '@/views/NovelDev'
+import NovelTongYong from '@/views/NovelTongYong'
 
 Vue.use(Router)
 
@@ -157,6 +158,34 @@ export default new Router({
           path: 'NovelReadDevThree',
           name: 'NovelReadDevThree',
           component : resolve => require(['@/components/NovelReadDevThree.vue'],resolve)
+        }
+      ]
+    },{//小说通用
+      path: '/NovelTongYong',
+      name: '/NovelTongYong',
+      component : NovelTongYong,
+      redirect:'/NovelTongYong/NovelBookShelfCurrency',
+      children:[
+        {//书架
+          path: 'NovelBookShelfCurrency',
+          name: 'NovelBookShelfCurrency',
+          component : resolve => require(['@/CurrencyNovel/NovelBookShelfCurrency.vue'],resolve)
+        },{//搜索
+          path: 'NovelSearchCurrency',
+          name: 'NovelSearchCurrency',
+          component : resolve => require(['@/CurrencyNovel/NovelSearchCurrency.vue'],resolve)
+        },{//详情
+          path: 'NovelDetailCurrency',
+          name: 'NovelDetailCurrency',
+          component : resolve => require(['@/CurrencyNovel/NovelDetailCurrency.vue'],resolve)
+        },{//滑动阅读
+          path: 'NovelReadCurrency',
+          name: 'NovelReadCurrency',
+          component : resolve => require(['@/CurrencyNovel/NovelReadCurrency.vue'],resolve)
+        },{//翻页阅读
+          path: 'NovelReadTwoCurrency',
+          name: 'NovelReadTwoCurrency',
+          component : resolve => require(['@/CurrencyNovel/NovelReadTwoCurrency.vue'],resolve)
         }
       ]
     }

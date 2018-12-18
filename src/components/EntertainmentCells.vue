@@ -13,6 +13,12 @@
       is-link
       value="本地DEV运行用这个">
     </mt-cell>
+    <mt-cell
+      title="小说"
+      to="/NovelTongYong/NovelBookShelfCurrency"
+      is-link
+      value="通用，已做跨域处理">
+    </mt-cell>
   </div>
 </template>
 

@@ -96,6 +96,11 @@
       //http://api.zhuishushenqi.com/book/fuzzy-search?query=大王&start=0&limit=20
       //console.log(this.drawer)
       this.quitApp();
+      //https://bird.ioliu.cn/v1/?url=http://api.zhuishushenqi.com/book/fuzzy-search?query=%E5%A4%A7%E7%8E%8B&start=0&limit=20
+      let searchUrl='https://bird.ioliu.cn/v1/?url=http://api.zhuishushenqi.com/book/fuzzy-search?query=%E5%A4%A7%E7%8E%8B&start=0&limit=20';
+      axios.get(searchUrl).then((res) => {
+        console.log(res.data)
+      })
     }
   }
 </script>
