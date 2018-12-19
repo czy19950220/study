@@ -781,11 +781,11 @@
                         when: {
                           turning: function(event, page, pageObject) {
                             // Implementation
-                            //console.log(page);
                             selfVue.loadCurrentPage=page;
-                          }
+                          },
                         }
                       });
+                      $('#magazine').turn('range', 5);//Gets a range of pages from pageNumber needed to keep in memory.
                     });
                     //......
                     setTimeout(() => {
