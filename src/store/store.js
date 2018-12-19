@@ -14,7 +14,7 @@ export const store = new Vuex.Store({
     userName: '',//用户名
     drawer: "关闭",
     bookDetail: '',//书籍详情
-    myFontFamily:'方正喵呜',//字体
+    myFontFamily:'unset',//字体
   },
   getters: {
     changeTest: (state) => {

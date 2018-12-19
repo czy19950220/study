@@ -351,6 +351,7 @@
       },
       //获取文本
       getText(chapters) {//http://chapter2.zhuishushenqi.com
+        this.allLoaded = false;//判断是否全部加载完毕
         //console.log(this.page)
         //console.log(chapters[this.page].title)
         this.currentPage=parseInt(this.page/100)+1;

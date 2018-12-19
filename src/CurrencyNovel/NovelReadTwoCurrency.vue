@@ -511,11 +511,11 @@
                 let yyy=this.bodyText[i];
                 for (let i = 0; i < xxx; i++) {
                   if (i==0){
-                    let txtHtml=`<div  style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};width: ${hangNum*this.rangeValue}px;" class="txt-header">${yyy.substring(0,(hangNum-2))}</div>`;
+                    let txtHtml=`<div  style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};width: ${hangNum*this.rangeValue+4}px;" class="txt-header">${yyy.substring(0,(hangNum-2))}</div>`;
                     newArr2.push(txtHtml)
                   } else {
                     let x=(hangNum-2)+(i-1)*hangNum,y=(hangNum-2)+i*hangNum;
-                    let txtHtml=`<div style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};width: ${hangNum*this.rangeValue}px;" class="txt-not-header">${yyy.substring(x,y)}</div>`
+                    let txtHtml=`<div style="font-size: ${this.rangeValue}px;font-family: ${this.myFontFamily};width: ${hangNum*this.rangeValue+4}px;" class="txt-not-header">${yyy.substring(x,y)}</div>`;
                     newArr2.push(txtHtml)
                   }
                 }
