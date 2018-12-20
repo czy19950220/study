@@ -1,101 +1,105 @@
 <template>
   <!--仿真读书-->
-  <div class="book-read container" id="book-read" @click="getMousePos" @swipeleft="swipeLeft" @swiperight="swipeRight">
-    <el-dialog
-      title="设置"
-      :visible.sync="centerDialogVisible"
-      width="90%"
-      center>
-      <span>字体大小:{{rangeValue}}像素（px）</span>
-      <mt-range
-        v-model="rangeValue"
-        :min="12"
-        :max="48"
-        :step="2"
-        :bar-height="5">
-      </mt-range>
-      <router-link to="/NovelTongYong/NovelReadCurrency"><el-button>滚动阅读</el-button></router-link>
-      <router-link to="/NovelTongYong/NovelReadTwoCurrency"><el-button>翻页阅读</el-button></router-link>
-      <color-picker v-model="color"></color-picker>
-      <p>
-        字体Color:
-        <input v-model="color" type="text">
-      </p>
-      <p>
-        背景图:
-        <input v-model="bgImg" type="text">
-      </p>
-      <span slot="footer" class="dialog-footer">
+  <div class="book-read container" id="book-read" >
+    <mt-swipe :show-indicators="false" :prevent="true" ><!--单个的轮播，用来阻止移动端浏览器的滑动前进和后退-->
+      <mt-swipe-item class="slide1" id="slide1">
+        <el-dialog
+          title="设置"
+          :visible.sync="centerDialogVisible"
+          width="90%"
+          center>
+          <span>字体大小:{{rangeValue}}像素（px）</span>
+          <mt-range
+            v-model="rangeValue"
+            :min="12"
+            :max="48"
+            :step="2"
+            :bar-height="5">
+          </mt-range>
+          <router-link to="/NovelTongYong/NovelReadCurrency"><el-button>滚动阅读</el-button></router-link>
+          <router-link to="/NovelTongYong/NovelReadTwoCurrency"><el-button>翻页阅读</el-button></router-link>
+          <color-picker v-model="color"></color-picker>
+          <p>
+            字体Color:
+            <input v-model="color" type="text">
+          </p>
+          <p>
+            背景图:
+            <input v-model="bgImg" type="text">
+          </p>
+          <span slot="footer" class="dialog-footer">
         </span>
-    </el-dialog>
-    <vue-drawer-layout
-      :enable="false"
-      ref="drawerLayout"
-      @mask-click="handleMaskClick"
-      :reverse="true">
-      <!--侧栏-->
-      <div class="drawer-book" id="drawer-book" slot="drawer">
-        <!--分页-->
-        <div class="block">
-          <el-pagination
-            background
-            @current-change="handleCurrentChange"
-            :current-page="1"
-            :page-size="100"
-            :pager-count="5"
-            layout="prev, pager, next"
-            :total="chapterList.length">
-          </el-pagination>
-        </div>
-        <!--章节-->
-        <div
-          v-for="(chapter,index) in chapterListNew"
-          @click="toChapter(chapter.title,index)"
-          :class="((index+(pageVal-1)*100) == page)? 'blue-class':'red-class'"
-          :key="index">
-          <mt-cell :title="chapter.title"/>
-        </div>
-      </div>
-      <!--主内容页-->
-      <div class="content" slot="content">
-        <!--header-->
-        <mt-header :title=title v-show="showTabbar">
-          <router-link to="/NovelTongYong/NovelBookShelfCurrency" slot="left">
-            <mt-button icon="back">返回</mt-button>
-          </router-link>
-          <mt-button icon="more" slot="right" @click="more"></mt-button>
-        </mt-header>
-        <!--文章-->
-        <div id="magazine" dir="ltr" @click="loadPrevClick()">
-          <div v-for="html in newHtmlArr" class="novel-page" :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}">
-            <div v-for="txt in html" v-html="txt">
+        </el-dialog>
+        <vue-drawer-layout
+          :enable="false"
+          ref="drawerLayout"
+          @mask-click="handleMaskClick"
+          :reverse="true">
+          <!--侧栏-->
+          <div class="drawer-book" id="drawer-book" slot="drawer">
+            <!--分页-->
+            <div class="block">
+              <el-pagination
+                background
+                @current-change="handleCurrentChange"
+                :current-page="1"
+                :page-size="100"
+                :pager-count="5"
+                layout="prev, pager, next"
+                :total="chapterList.length">
+              </el-pagination>
+            </div>
+            <!--章节-->
+            <div
+              v-for="(chapter,index) in chapterListNew"
+              @click="toChapter(chapter.title,index)"
+              :class="((index+(pageVal-1)*100) == page)? 'blue-class':'red-class'"
+              :key="index">
+              <mt-cell :title="chapter.title"/>
             </div>
           </div>
+          <!--主内容页-->
+          <div class="content" slot="content" @click="getMousePos()" @swipeleft="swipeLeft" @swiperight="swipeRight">
+            <!--header-->
+            <mt-header :title=title v-show="showTabbar">
+              <router-link to="/NovelTongYong/NovelBookShelfCurrency" slot="left">
+                <mt-button icon="back">返回</mt-button>
+              </router-link>
+              <mt-button icon="more" slot="right" @click="more"></mt-button>
+            </mt-header>
+            <!--文章-->
+            <div id="magazine" dir="ltr" @click="loadPrevClick()">
+              <div v-for="html in newHtmlArr" class="novel-page" :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}">
+                <div v-for="txt in html" v-html="txt">
+                </div>
+              </div>
+            </div>
+            <!--底部切换页面-->
+            <mt-tabbar style="background:none; z-index: 100" v-show="showTabbar">
+              <particle-effect-button
+                :hidden="isHidden"
+                color="rgb(50, 186, 250)"
+                :duration="500"
+                type="triangle"
+                drawStyle="stroke"
+              >
+                <mt-tab-item id="上一章" style="width: 100%;">
+                  <el-button type="primary" icon="el-icon-arrow-left" @click="loadPrev(-1)" style="float: left">上一章</el-button>
+                  <el-button type="primary" @click="sheZhi()">设置</el-button>
+                  <el-button type="primary" @click="loadPrev(1)" style="float: right">下一章<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                </mt-tab-item>
+              </particle-effect-button>
+            </mt-tabbar>
+          </div>
+        </vue-drawer-layout>
+        <!--draggabilly-button-->
+        <div class="draggable" @click="main_log()">
+          <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
+            <div class="my-icon-button"></div>
+          </mt-palette-button>
         </div>
-        <!--底部切换页面-->
-        <mt-tabbar style="background:none; z-index: 100" v-show="showTabbar">
-          <particle-effect-button
-            :hidden="isHidden"
-            color="rgb(50, 186, 250)"
-            :duration="500"
-            type="triangle"
-            drawStyle="stroke"
-          >
-            <mt-tab-item id="上一章" style="width: 100%;">
-              <el-button type="primary" icon="el-icon-arrow-left" @click="loadPrev(-1)" style="float: left">上一章</el-button>
-              <el-button type="primary" @click="sheZhi()">设置</el-button>
-              <el-button type="primary" @click="loadPrev(1)" style="float: right">下一章<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-            </mt-tab-item>
-          </particle-effect-button>
-        </mt-tabbar>
-      </div>
-    </vue-drawer-layout>
-    <!--draggabilly-button-->
-    <!--<div class="draggable" @click="main_log()">
-      <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
-        <div class="my-icon-button"></div>
-      </mt-palette-button>
-    </div>-->
+      </mt-swipe-item>
+    </mt-swipe>
   </div>
 </template>
 
@@ -819,7 +823,7 @@
     },
     mounted(){
 
-      //this.theDraggabilly();
+      this.theDraggabilly();
       this.bookReadIndex();
       //this.openFullScreen();
       //this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
@@ -870,13 +874,18 @@
   .particles{
     width: 100%;
   }
+  .mint-palette-button{
+    height: 32px;
+    width: 32px;
+    line-height: 32px;
+  }
   .draggable{
-    width: 56px;
-    height: 56px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     opacity: 0.5;
-    left: calc(100% - 60px);
-    top: calc(100% - 120px);
+    left: calc(100% - 40px);
+    top: calc(50% - 80px);
   }
   .draggable.is-pointer-down {
     background: #09F;
