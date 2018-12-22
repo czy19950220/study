@@ -58,10 +58,6 @@ export default new Router({
           path: 'QRImage',
           name: 'QRImage',
           component : resolve => require(['@/components/QRImage.vue'],resolve)
-        },{//测试ParticleEffectsButton
-          path: 'StudyParticleEffectsButton',
-          name: 'StudyParticleEffectsButton',
-          component : resolve => require(['@/components/StudyParticleEffectsButton.vue'],resolve)
         },{//
           path: 'StudyTurnJS',
           name: 'StudyTurnJS',

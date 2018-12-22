@@ -91,11 +91,11 @@
       </div>
     </vue-drawer-layout>
     <!--draggabilly-button-->
-    <div class="draggable" @click="main_log()">
+    <!--<div class="draggable" @click="main_log()">
       <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
         <div class="my-icon-button"></div>
       </mt-palette-button>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -592,7 +592,7 @@
       };
     },
     mounted(){
-      this.theDraggabilly();
+      //this.theDraggabilly();
       this.bookReadIndex();
       //this.openFullScreen();
       this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;

@@ -1,12 +1,12 @@
 @font-face {
   font-family: 'HanYiXiXingKai';
-  src: url('xiXingKai.ttf') format('opentype');
+  src: url('https://czy-1257069199.cos.ap-beijing.myqcloud.com/html/test/fonts/xiXingKai.ttf') format('opentype');
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: 'FangZhengMiaoWu';
-  src: url('FZMWFont.ttf') format('opentype');
+  src: url('https://czy-1257069199.cos.ap-beijing.myqcloud.com/html/test/fonts/FZMWFont.ttf') format('opentype');
   font-weight: bold;
   font-style: normal;
 }
