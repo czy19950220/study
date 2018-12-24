@@ -15,6 +15,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
+    "draggabilly": "^2.2.0",
     "element-ui": "^2.4.9",
     "es6-promise": "^4.2.4",
     "fastclick": "^1.0.6",
