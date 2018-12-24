@@ -1,110 +1,111 @@
 <template>
   <!--仿真读书-->
-  <div class="book-read container" id="book-read" @click="getMousePos()">
-    <el-dialog
-      title="设置"
-      :visible.sync="centerDialogVisible"
-      width="90%"
-      center>
-      <span>字体大小:{{rangeValue}}像素（px）</span>
-      <mt-range
-        v-model="rangeValue"
-        :min="12"
-        :max="48"
-        :step="2"
-        :bar-height="5">
-      </mt-range>
-      <router-link to="/NovelTongYong/NovelReadCurrency">
-        <el-button>滚动阅读</el-button>
-      </router-link>
-      <router-link to="/NovelTongYong/NovelReadTwoCurrency">
-        <el-button>翻页阅读</el-button>
-      </router-link>
-      <color-picker v-model="color"></color-picker>
-      <p>
-        字体Color:
-        <input v-model="color" type="text">
-      </p>
-      <p>
-        背景图:
-        <input v-model="bgImg" type="text">
-      </p>
-      <span slot="footer" class="dialog-footer">
-      </span>
-    </el-dialog>
-    <vue-drawer-layout
-      :enable="false"
-      ref="drawerLayout"
-      @mask-click="handleMaskClick"
-      :reverse="true">
-      <!--侧栏-->
-      <div class="drawer-book" id="drawer-book" slot="drawer">
-        <!--分页-->
-        <div class="block">
-          <el-pagination
-            background
-            @current-change="handleCurrentChange"
-            :current-page="1"
-            :page-size="100"
-            :pager-count="5"
-            layout="prev, pager, next"
-            :total="chapterList.length">
-          </el-pagination>
-        </div>
-        <!--章节-->
-        <div
-          v-for="(chapter,index) in chapterListNew"
-          @click="toChapter(chapter.title,index)"
-          :class="((index+(pageVal-1)*100) == page)? 'blue-class':'red-class'"
-          :key="index">
-          <mt-cell :title="chapter.title"/>
-        </div>
-      </div>
-      <!--主内容页-->
-      <div class="content" id="bookMainCon" slot="content" @click="loadPrevClick" @swipeleft="swipeLeft"
-           @swiperight="swipeRight">
-        <!--header-->
-        <mt-header :title=title v-show="showTabbar">
-          <router-link to="/NovelTongYong/NovelBookShelfCurrency" slot="left">
-            <mt-button icon="back">返回</mt-button>
+  <div class="book-read container" id="book-read" @click="getMousePos()" @touchmove="stopDefault">
+        <el-dialog
+          title="设置"
+          :visible.sync="centerDialogVisible"
+          width="90%"
+          center>
+          <span>字体大小:{{rangeValue}}像素（px）</span>
+          <mt-range
+            v-model="rangeValue"
+            :min="12"
+            :max="48"
+            :step="2"
+            :bar-height="5">
+          </mt-range>
+          <router-link to="/NovelTongYong/NovelReadCurrency">
+            <el-button>滚动阅读</el-button>
           </router-link>
-          <mt-button icon="more" slot="right" @click="more"></mt-button>
-        </mt-header>
-        <!--文章-->
-        <div id="magazine" dir="ltr">
-          <div v-for="html in newHtmlArr" class="novel-page"
-               :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}">
-            <div v-for="txt in html" v-html="txt">
-            </div>
+          <router-link to="/NovelTongYong/NovelReadTwoCurrency">
+            <el-button>翻页阅读</el-button>
+          </router-link>
+          <color-picker v-model="color"></color-picker>
+          <p>
+            字体Color:
+            <input v-model="color" type="text">
+          </p>
+          <p>
+            背景图:
+            <input v-model="bgImg" type="text">
+          </p>
+          <span slot="footer" class="dialog-footer">
+      </span>
+        </el-dialog>
+        <vue-drawer-layout
+          :enable="false"
+          ref="drawerLayout"
+          @mask-click="handleMaskClick"
+          :reverse="true">
+          <!--侧栏-->
+          <div class="drawer-book" id="drawer-book" slot="drawer">
+            <!--分页-->
+            <el-scrollbar>
+              <div class="block">
+                <el-pagination
+                  background
+                  @current-change="handleCurrentChange"
+                  :current-page="1"
+                  :page-size="100"
+                  :pager-count="5"
+                  layout="prev, pager, next"
+                  :total="chapterList.length">
+                </el-pagination>
+              </div>
+              <!--章节-->
+              <div
+                v-for="(chapter,index) in chapterListNew"
+                @click="toChapter(chapter.title,index)"
+                :class="((index+(pageVal-1)*100) == page)? 'blue-class':'red-class'"
+                :key="index">
+                <mt-cell :title="chapter.title"/>
+              </div>
+            </el-scrollbar>
           </div>
-        </div>
-        <!--底部切换页面-->
-        <mt-tabbar style="background:none; z-index: 100" v-show="showTabbar">
-          <particle-effect-button
-            :hidden="isHidden"
-            color="rgb(50, 186, 250)"
-            :duration="500"
-            type="triangle"
-            drawStyle="stroke"
-          >
-            <mt-tab-item id="上一章" style="width: 100%;">
-              <el-button type="primary" icon="el-icon-arrow-left" @click="loadPrev(-1)" style="float: left">上一章
-              </el-button>
-              <el-button type="primary" @click="sheZhi()">设置</el-button>
-              <el-button type="primary" @click="loadPrev(1)" style="float: right">下一章<i
-                class="el-icon-arrow-right el-icon--right"></i></el-button>
-            </mt-tab-item>
-          </particle-effect-button>
-        </mt-tabbar>
+          <!--主内容页-->
+          <div class="content" id="bookMainCon" slot="content" @click="loadPrevClick" @swipeleft="swipeLeft" @swiperight="swipeRight">
+            <!--header-->
+            <mt-header :title=title v-show="showTabbar">
+              <router-link to="/NovelTongYong/NovelBookShelfCurrency" slot="left">
+                <mt-button icon="back">返回</mt-button>
+              </router-link>
+              <mt-button icon="more" slot="right" @click="more"></mt-button>
+            </mt-header>
+            <!--文章-->
+            <div id="magazine" dir="ltr">
+              <div v-for="html in newHtmlArr" class="novel-page"
+                   :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}">
+                <div v-for="txt in html" v-html="txt">
+                </div>
+              </div>
+            </div>
+            <!--底部切换页面-->
+            <mt-tabbar style="background:none; z-index: 100" v-show="showTabbar">
+              <particle-effect-button
+                :hidden="isHidden"
+                color="rgb(50, 186, 250)"
+                :duration="500"
+                type="triangle"
+                drawStyle="stroke"
+              >
+                <mt-tab-item id="上一章" style="width: 100%;">
+                  <el-button type="primary" icon="el-icon-arrow-left" @click="loadPrev(-1)" style="float: left">上一章
+                  </el-button>
+                  <el-button type="primary" @click="sheZhi()">设置</el-button>
+                  <el-button type="primary" @click="loadPrev(1)" style="float: right">下一章<i
+                    class="el-icon-arrow-right el-icon--right"></i></el-button>
+                </mt-tab-item>
+              </particle-effect-button>
+            </mt-tabbar>
+          </div>
+        </vue-drawer-layout>
+        <!--draggabilly-button-->
+        <!--<div class="draggable" id="draggable">
+          <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
+            <div class="my-icon-button"></div>
+          </mt-palette-button>
+        </div>-->
       </div>
-    </vue-drawer-layout>
-    <!--draggabilly-button-->
-    <!--<div class="draggable" id="draggable">
-      <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
-        <div class="my-icon-button"></div>
-      </mt-palette-button>
-    </div>-->
-  </div>
 </template>
 
 <script>
@@ -120,10 +121,14 @@
     name: "NovelReadTwoCurrency",
     components: {
       ParticleEffectButton,
-      ColorPicker
+      ColorPicker,
     },
     data() {
       return {
+        swiperOption: {
+          direction: 'horizontal', // 垂直切换选项
+          touchRatio:0
+        },
         bgImg: 'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg5.jpg',//背景图
         color: '#000000',//字体颜色
         vueDrawerLayout: false,//是否是打开了切换章节...
@@ -162,7 +167,10 @@
       ...mapGetters([
         'bookDetail',
         'myFontFamily'
-      ])
+      ]),
+      swiper() {
+        return this.$refs.mySwiper.swiper
+      }
     },
     watch: {
       rangeValue: {
@@ -197,6 +205,18 @@
       }
     },
     methods: {
+      stopDefault(e) {
+        var e = e || window.event;
+        //阻止默认浏览器动作(W3C)
+        if (e && e.preventDefault) {
+          e.preventDefault();
+        }
+        //IE中阻止函数器默认动作的方式
+        else {
+          window.event.returnValue = false;
+        }
+        return false;
+      },
       //屏幕左滑
       swipeLeft() {
         if (this.loadCurrentPage == $("#magazine").turn("pages")) {
