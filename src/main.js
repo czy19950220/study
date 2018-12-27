@@ -21,6 +21,7 @@ import 'vue-awesome-mui/mui/dist/css/mui.css'
 import VueQriously from 'vue-qriously';//二维码
 import FastClick from 'fastclick'
 
+
 // mount with global
 //vue-froala-wysiwyg
 // Require Froala Editor js file.
