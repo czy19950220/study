@@ -11,12 +11,10 @@
         <div class="grid-content bg-purple-light"></div>
       </el-col>
     </el-row>
-    <img :src="imgSrc" alt="" style="height: 100px;width: auto;">
   </div>
 </template>
 
 <script>
-  import html2canvas from 'html2canvas'
   export default {
     name: "indexCV",
     components: {
@@ -33,15 +31,15 @@
         var image = new Image();
         image.src = canvas.toDataURL("image/png");
         this.imgSrc=image.src;
-        $('#my-cv').css("background-image",`url(${image.src})`);
+        $(`#my-cv`).css("background-image",`url(${image.src})`);
         return image;
       }
     },
     mounted() {
-      html2canvas(document.querySelector("#capture")).then(canvas => {
+      /*html2canvas(document.querySelector("#capture")).then(canvas => {
         //document.body.appendChild(canvas)
         this.convertCanvasToImage(canvas);
-      });
+      });*/
     },
     created() {
 
