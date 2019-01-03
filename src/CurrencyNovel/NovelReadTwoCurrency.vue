@@ -1,6 +1,6 @@
 <template>
   <!--仿真读书-->
-  <div class="book-read container" id="book-read" @click="getMousePos()" @touchmove="stopDefault">
+  <div class="book-read container" id="book-read" @click="getMousePos()">
         <el-dialog
           title="设置"
           :visible.sync="centerDialogVisible"
@@ -72,7 +72,7 @@
               <mt-button icon="more" slot="right" @click="more"></mt-button>
             </mt-header>
             <!--文章-->
-            <div id="magazine" dir="ltr">
+            <div id="magazine" dir="ltr" @touchmove="stopDefault">
               <div v-for="html in newHtmlArr" class="novel-page"
                    :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}">
                 <div v-for="txt in html" v-html="txt">
@@ -125,10 +125,6 @@
     },
     data() {
       return {
-        swiperOption: {
-          direction: 'horizontal', // 垂直切换选项
-          touchRatio:0
-        },
         bgImg: 'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg5.jpg',//背景图
         color: '#000000',//字体颜色
         vueDrawerLayout: false,//是否是打开了切换章节...

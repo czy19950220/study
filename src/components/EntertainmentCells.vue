@@ -1,7 +1,7 @@
 <template>
   <!--娱乐页面cells-->
   <div>
-    <mt-cell
+    <!--<mt-cell
       title="小说"
       to="/Novel/NovelBookshelf"
       is-link
@@ -12,7 +12,7 @@
       to="/NovelDev/NovelBookshelfDev"
       is-link
       value="本地DEV运行用这个">
-    </mt-cell>
+    </mt-cell>-->
     <mt-cell
       title="小说"
       to="/NovelTongYong/NovelBookShelfCurrency"
