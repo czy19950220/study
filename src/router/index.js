@@ -4,8 +4,8 @@ import Index from '@/views/Index'
 import Study from '@/views/Study'
 import Summary from '@/views/Summary'
 import Entertainment from '@/views/Entertainment'
-//import Novel from '@/views/Novel'
-//import NovelDev from '@/views/NovelDev'
+import Novel from '@/views/Novel'
+import NovelDev from '@/views/NovelDev'
 import NovelTongYong from '@/views/NovelTongYong'
 
 Vue.use(Router)
@@ -92,7 +92,7 @@ export default new Router({
           component : resolve => require(['@/components/EntertainmentCells.vue'],resolve)
         }
       ]
-    }/*,{//小说
+    },{//小说
       path: '/Novel',
       name: '/Novel',
       component : Novel,
@@ -152,7 +152,7 @@ export default new Router({
           component : resolve => require(['@/components/NovelReadDevThree.vue'],resolve)
         }
       ]
-    }*/,{//小说通用
+    },{//小说通用
       path: '/NovelTongYong',
       name: '/NovelTongYong',
       component : NovelTongYong,
