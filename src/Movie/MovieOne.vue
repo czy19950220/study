@@ -6,7 +6,13 @@
 
 <script>
     export default {
-        name: "MovieOne"
+      name: "MovieOne",
+      created(){
+        let that=this;
+        this.$mui.back = ()=> {//从书架返回到娱乐页面
+          this.$router.push('/Entertainment/EntertainmentCells');
+        };
+      }
     }
 </script>
 
