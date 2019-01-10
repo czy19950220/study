@@ -7,6 +7,7 @@ import Entertainment from '@/views/Entertainment'
 import Novel from '@/views/Novel'
 import NovelDev from '@/views/NovelDev'
 import NovelTongYong from '@/views/NovelTongYong'
+import MovieOne from '@/Movie/MovieOne'
 
 Vue.use(Router)
 
@@ -62,7 +63,7 @@ export default new Router({
       ]
     },{//总结
       path: '/Summary',
-      name: '/Summary',
+      name: 'Summary',
       component : Summary,
       redirect:'/Summary/SummaryCells',
       children:[
@@ -82,7 +83,7 @@ export default new Router({
       ]
     },{//娱乐
       path: '/Entertainment',
-      name: '/Entertainment',
+      name: 'Entertainment',
       component : Entertainment,
       redirect:'/Entertainment/EntertainmentCells',
       children:[
@@ -94,7 +95,7 @@ export default new Router({
       ]
     },{//小说
       path: '/Novel',
-      name: '/Novel',
+      name: 'Novel',
       component : Novel,
       redirect:'/Novel/NovelBookshelf',
       children:[
@@ -122,7 +123,7 @@ export default new Router({
       ]
     },{//小说
       path: '/NovelDev',
-      name: '/NovelDev',
+      name: 'NovelDev',
       component : NovelDev,
       redirect:'/NovelDev/NovelBookshelfDev',
       children:[
@@ -154,7 +155,7 @@ export default new Router({
       ]
     },{//小说通用
       path: '/NovelTongYong',
-      name: '/NovelTongYong',
+      name: 'NovelTongYong',
       component : NovelTongYong,
       redirect:'/NovelTongYong/NovelBookShelfCurrency',
       children:[
@@ -180,6 +181,10 @@ export default new Router({
           component : resolve => require(['@/CurrencyNovel/NovelReadTwoCurrency.vue'],resolve)
         }
       ]
+    },{//电影http://t.cn/REDKdpV
+      path: '/MovieOne',
+      name: 'MovieOne',
+      component : MovieOne
     }
   ]
 })

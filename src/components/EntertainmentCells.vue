@@ -19,6 +19,12 @@
       is-link
       value="通用，已做跨域处理">
     </mt-cell>
+    <mt-cell
+      title="电影"
+      to="/MovieOne"
+      is-link
+      value="lirongyao.com/api/index.php">
+    </mt-cell>
   </div>
 </template>
 
