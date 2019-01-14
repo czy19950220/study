@@ -19,6 +19,7 @@
 8、HTML的问题总结
 9、JS的问题总结
 10、小说阅读（由于跨域问题，所以分本地和制成APP的区别）
+11、免费视频
 
 # install dependencies
 npm install
