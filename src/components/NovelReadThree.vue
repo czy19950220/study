@@ -22,7 +22,15 @@
       </p>
       <p>
         背景图:
-        <input v-model="bgImg" type="text">
+        <!--<input v-model="bgImg" type="text">-->
+        <el-select v-model="bgImg" placeholder="请选择">
+          <el-option
+            v-for="item in bgImages"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </p>
       <!--<span>字体：</span>
       <mt-picker :slots="fontSlot" @change="onFontChange" :visible-item-count="3"></mt-picker>-->
@@ -107,6 +115,7 @@
   import ParticleEffectButton from 'vue-particle-effect-button'
   import './../assets/js/turn.min'
   import ColorPicker from 'vue-color-picker-wheel';
+  import {bgImgs} from './../assets/js/bgImg'
   export default {
     name: "NovelReadThree",
     components: {
@@ -115,6 +124,7 @@
     },
     data() {
       return {
+        bgImages:[],
         bgImg:'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg5.jpg',//背景图
         color: '#000000',//字体颜色
         vueDrawerLayout:false,//是否是打开了切换章节...
@@ -179,11 +189,11 @@
       },
       bgImg:{
         handler(curVal, oldVal) {
-          setTimeout(() => {
-            let index=this.page-(this.pageVal-1)*100;
-            this.toChapterMui(this.title,index);
-            this.bgImgChange(curVal);
-          }, 300);
+          $('#magazine .page').css("background-image",`url(${curVal})`);
+          let index=this.page-(this.pageVal-1)*100;
+          this.toChapterMui(this.title,index);
+          this.bgImgChange(curVal);
+          $('#magazine .page').css("background-image",`url(${curVal})`);
         }
       }
     },
@@ -334,6 +344,7 @@
             index=czyBooks.books[i].lastReadChapterIndex;
           }
         }
+        $('#magazine .page').css("background-image",`url(${this.bgImg})`);
         setTimeout(() => {
           this.page=index;
         },50)
@@ -856,6 +867,7 @@
       }, 100);
     },
     mounted(){
+      this.bgImages=bgImgs;
       //this.theDraggabilly();
       this.bookReadIndex();
       //this.openFullScreen();

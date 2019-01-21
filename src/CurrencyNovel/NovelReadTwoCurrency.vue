@@ -27,7 +27,15 @@
           </p>
           <p>
             背景图:
-            <input v-model="bgImg" type="text">
+            <!--<input v-model="bgImg" type="text">-->
+            <el-select v-model="bgImg" placeholder="请选择">
+              <el-option
+                v-for="item in bgImages"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </p>
           <span slot="footer" class="dialog-footer">
       </span>
@@ -116,6 +124,7 @@
   import ParticleEffectButton from 'vue-particle-effect-button'
   import './../assets/js/turn.min'
   import ColorPicker from 'vue-color-picker-wheel';
+  import {bgImgs} from './../assets/js/bgImg'
 
   export default {
     name: "NovelReadTwoCurrency",
@@ -125,6 +134,7 @@
     },
     data() {
       return {
+        bgImages:[],
         bgImg: 'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg5.jpg',//背景图
         color: '#000000',//字体颜色
         vueDrawerLayout: false,//是否是打开了切换章节...
@@ -192,11 +202,10 @@
       },
       bgImg: {
         handler(curVal, oldVal) {
-          setTimeout(() => {
-            let index = this.page - (this.pageVal - 1) * 100;
-            this.toChapter(this.title, index);
-            this.bgImgChange(curVal);
-          }, 300);
+          $('#magazine .page').css("background-image",`url(${curVal})`);
+          let index = this.page - (this.pageVal - 1) * 100;
+          this.toChapter(this.title, index);
+          this.bgImgChange(curVal);
         }
       }
     },
@@ -369,6 +378,7 @@
             index = czyBooks.books[i].lastReadChapterIndex;
           }
         }
+        $('#magazine .page').css("background-image",`url(${this.bgImg})`);
         this.page = index;
       },
       //改变书架存储的阅读至第几章
@@ -852,8 +862,11 @@
       this.$mui.back = function () {//从阅读到书架
         that.$router.push('/NovelTongYong/NovelBookShelfCurrency')
       };
+      $('#magazine .page').css("background-image",`url(${this.bgImg})`);
     },
     mounted() {
+      this.bgImages=bgImgs;
+      //console.log(this.bgImages);
       this.theDraggabilly();
       this.bookReadIndex();
       //this.openFullScreen();

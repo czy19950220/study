@@ -183,6 +183,7 @@
             let index=this.page-(this.pageVal-1)*100;
             this.toChapter(this.title,index);
             this.bgImgChange(curVal);
+            $('#magazine .page').css("background-image",`url(${curVal})`);
           }, 300);
         }
       }
@@ -342,6 +343,7 @@
             index=czyBooks.books[i].lastReadChapterIndex;
           }
         }
+        $('#magazine .page').css("background-image",`url(${this.bgImg})`);
         this.page=index;
       },
       //改变书架存储的阅读至第几章
