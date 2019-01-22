@@ -1,4 +1,4 @@
-export const bgImgs=[
+[
   {
     value: 'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg.jpg',
     label: '选择项1'
