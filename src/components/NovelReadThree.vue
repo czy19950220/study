@@ -867,9 +867,13 @@
       }, 100);
     },
     mounted(){
-      this.bgImages=bgImgs;
+      //this.bgImages=bgImgs;
       //this.theDraggabilly();
       this.bookReadIndex();
+      axios.get('https://raw.githubusercontent.com/czy19950220/study/master/src/assets/js/bgImg.json').then((response) => {
+        //console.log(response.data);
+        this.bgImages=response.data.bgImg;
+      });
       //this.openFullScreen();
       //this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
     },

@@ -124,7 +124,6 @@
   import ParticleEffectButton from 'vue-particle-effect-button'
   import './../assets/js/turn.min'
   import ColorPicker from 'vue-color-picker-wheel';
-  //import {bgImgs} from './../assets/js/bgImg'
 
   export default {
     name: "NovelReadTwoCurrency",
@@ -865,14 +864,14 @@
       $('#magazine .page').css("background-image",`url(${this.bgImg})`);
     },
     mounted() {
-      this.bgImages=bgImgs;
       //console.log(this.bgImages);
       this.theDraggabilly();
       this.bookReadIndex();
       //this.openFullScreen();
       //this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
-      axios.get('https://raw.githubusercontent.com/czy19950220/study/master/src/assets/js/bgImg.js').then((response) => {
-        console.log(JSON.parse(response.data))
+      axios.get('https://raw.githubusercontent.com/czy19950220/study/master/src/assets/js/bgImg.json').then((response) => {
+        //console.log(response.data);
+        this.bgImages=response.data.bgImg;
       });
     },
     beforeRouteLeave(to, from, next) {
