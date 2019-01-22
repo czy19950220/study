@@ -1,6 +1,5 @@
 {
-  bgImg:
-  [
+  "bgImg":[
     {
       "value": "https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg.jpg",
       "label": "选择项1"
@@ -36,7 +35,7 @@
     {
       "value": "https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg.jpg",
       "label": "选择项9"
-    },
+    }
   ]
 }
 

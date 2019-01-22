@@ -124,7 +124,7 @@
   import ParticleEffectButton from 'vue-particle-effect-button'
   import './../assets/js/turn.min'
   import ColorPicker from 'vue-color-picker-wheel';
-  import {bgImgs} from './../assets/js/bgImg'
+  //import {bgImgs} from './../assets/js/bgImg'
 
   export default {
     name: "NovelReadTwoCurrency",
@@ -872,7 +872,7 @@
       //this.openFullScreen();
       //this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
       axios.get('https://raw.githubusercontent.com/czy19950220/study/master/src/assets/js/bgImg.js').then((response) => {
-        console.log((response.data))
+        console.log(JSON.parse(response.data))
       });
     },
     beforeRouteLeave(to, from, next) {

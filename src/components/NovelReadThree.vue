@@ -115,7 +115,7 @@
   import ParticleEffectButton from 'vue-particle-effect-button'
   import './../assets/js/turn.min'
   import ColorPicker from 'vue-color-picker-wheel';
-  import {bgImgs} from './../assets/js/bgImg'
+  //import {bgImgs} from './../assets/js/bgImg'
   export default {
     name: "NovelReadThree",
     components: {
