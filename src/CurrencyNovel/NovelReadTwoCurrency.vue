@@ -872,7 +872,7 @@
       //this.openFullScreen();
       //this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
       axios.get('https://raw.githubusercontent.com/czy19950220/study/master/src/assets/js/bgImg.js').then((response) => {
-        console.log(response.data)
+        console.log(JSON.parse(response.data))
       });
     },
     beforeRouteLeave(to, from, next) {
