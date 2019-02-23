@@ -210,6 +210,7 @@
           let index = this.page - (this.pageVal - 1) * 100;
           this.toChapter(this.title, index);
           this.bgImgChange(curVal);
+          console.log(curVal)
         }
       }
     },
@@ -383,6 +384,7 @@
             index = czyBooks.books[i].lastReadChapterIndex;
           }
         }
+        //console.log(this.bgImg)
         $('#magazine .page').css("background-image",`url(${this.bgImg})`);
         this.page = index;
       },
@@ -873,6 +875,10 @@
       this.$mui.back = function () {//从阅读到书架
         that.$router.push('/NovelTongYong/NovelBookShelfCurrency')
       };
+      let img1=JSON.parse(localStorage.getItem("czyBooks")).bgImg;
+      setTimeout(()=>{
+        $('#magazine .page').css("background-image",`url(${img1})`);
+      },2000);
 
     },
     mounted() {
@@ -882,7 +888,6 @@
       //this.openFullScreen();
       //this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
       axios.get('https://raw.githubusercontent.com/czy19950220/study/master/src/assets/js/bgImg.json').then((response) => {
-        //console.log(response.data);
         this.bgImages=response.data.bgImg;
       });
     },
