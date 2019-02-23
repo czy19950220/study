@@ -1,119 +1,120 @@
 <template>
   <!--仿真读书-->
   <div class="book-read container" id="book-read" @click="getMousePos()">
-        <el-dialog
-          title="设置"
-          :visible.sync="centerDialogVisible"
-          width="90%"
-          center>
-          <span>字体大小:{{rangeValue}}像素（px）</span>
-          <mt-range
-            v-model="rangeValue"
-            :min="12"
-            :max="48"
-            :step="2"
-            :bar-height="5">
-          </mt-range>
-          <router-link to="/NovelTongYong/NovelReadCurrency">
-            <el-button>滚动阅读</el-button>
-          </router-link>
-          <router-link to="/NovelTongYong/NovelReadTwoCurrency">
-            <el-button>翻页阅读</el-button>
-          </router-link>
-          <color-picker v-model="color"></color-picker>
-          <p>
-            字体Color:
-            <input v-model="color" type="text">
-          </p>
-          <p>
-            背景图:
-            <!--<input v-model="bgImg" type="text">-->
-            <el-select v-model="bgImg" placeholder="请选择">
-              <el-option
-                v-for="item in bgImages"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </p>
-          <span slot="footer" class="dialog-footer">
-      </span>
-        </el-dialog>
-        <vue-drawer-layout
-          :enable="false"
-          ref="drawerLayout"
-          @mask-click="handleMaskClick"
-          :reverse="true">
-          <!--侧栏-->
-          <div class="drawer-book" id="drawer-book" slot="drawer">
-            <!--分页-->
-            <el-scrollbar>
-              <div class="block">
-                <el-pagination
-                  background
-                  @current-change="handleCurrentChange"
-                  :current-page="1"
-                  :page-size="100"
-                  :pager-count="5"
-                  layout="prev, pager, next"
-                  :total="chapterList.length">
-                </el-pagination>
-              </div>
-              <!--章节-->
-              <div
-                v-for="(chapter,index) in chapterListNew"
-                @click="toChapter(chapter.title,index)"
-                :class="((index+(pageVal-1)*100) == page)? 'blue-class':'red-class'"
-                :key="index">
-                <mt-cell :title="chapter.title"/>
-              </div>
-            </el-scrollbar>
+    <el-dialog
+      title="设置"
+      :visible.sync="centerDialogVisible"
+      width="90%"
+      center>
+      <span>字体大小:{{rangeValue}}像素（px）</span>
+      <mt-range
+        v-model="rangeValue"
+        :min="12"
+        :max="48"
+        :step="2"
+        :bar-height="5">
+      </mt-range>
+      <router-link to="/NovelTongYong/NovelReadCurrency">
+        <el-button>滚动阅读</el-button>
+      </router-link>
+      <router-link to="/NovelTongYong/NovelReadTwoCurrency">
+        <el-button>翻页阅读</el-button>
+      </router-link>
+      <color-picker v-model="color"></color-picker>
+      <p>
+        字体Color:
+        <input v-model="color" type="text">
+      </p>
+      <p>
+        背景图:
+        <!--<input v-model="bgImg" type="text">-->
+        <el-select v-model="bgImg" placeholder="请选择">
+          <el-option
+            v-for="item in bgImages"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </p>
+      <span slot="footer" class="dialog-footer">
+  </span>
+    </el-dialog>
+    <vue-drawer-layout
+      :enable="false"
+      ref="drawerLayout"
+      @mask-click="handleMaskClick"
+      :reverse="true">
+      <!--侧栏-->
+      <div class="drawer-book" id="drawer-book" slot="drawer">
+        <!--分页-->
+        <el-scrollbar>
+          <div class="block">
+            <el-pagination
+              background
+              @current-change="handleCurrentChange"
+              :current-page.sync="currentPage"
+              :page-size="100"
+              :pager-count="5"
+              layout="prev, pager, next"
+              :total="chapterList.length">
+            </el-pagination>
           </div>
-          <!--主内容页-->
-          <div class="content" id="bookMainCon" slot="content" @click="loadPrevClick" @swipeleft="swipeLeft" @swiperight="swipeRight">
-            <!--header-->
-            <mt-header :title=title v-show="showTabbar">
-              <router-link to="/NovelTongYong/NovelBookShelfCurrency" slot="left">
-                <mt-button icon="back">返回</mt-button>
-              </router-link>
-              <mt-button icon="more" slot="right" @click="more"></mt-button>
-            </mt-header>
-            <!--文章-->
-            <div id="magazine" dir="ltr" @touchmove="stopDefault">
-              <div v-for="html in newHtmlArr" class="novel-page"
-                   :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}">
-                <div v-for="txt in html" v-html="txt">
-                </div>
-              </div>
-            </div>
-            <!--底部切换页面-->
-            <mt-tabbar style="background:none; z-index: 100" v-show="showTabbar">
-              <particle-effect-button
-                :hidden="isHidden"
-                color="rgb(50, 186, 250)"
-                :duration="500"
-                type="triangle"
-                drawStyle="stroke"
-              >
-                <mt-tab-item id="上一章" style="width: 100%;">
-                  <el-button type="primary" icon="el-icon-arrow-left" @click="loadPrev(-1)" style="float: left">上一章
-                  </el-button>
-                  <el-button type="primary" @click="sheZhi()">设置</el-button>
-                  <el-button type="primary" @click="loadPrev(1)" style="float: right">下一章<i
-                    class="el-icon-arrow-right el-icon--right"></i></el-button>
-                </mt-tab-item>
-              </particle-effect-button>
-            </mt-tabbar>
+          <!--章节-->
+          <div
+            v-for="(chapter,index) in chapterListNew"
+            @click="toChapter(chapter.title,index)"
+            :class="((index+(pageVal-1)*100) == page)? 'blue-class':'red-class'"
+            :key="index">
+            <mt-cell :title="chapter.title"/>
           </div>
-        </vue-drawer-layout>
-        <!--draggabilly-button-->
-        <!--<div class="draggable" id="draggable">
-          <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
-            <div class="my-icon-button"></div>
-          </mt-palette-button>
-        </div>-->
+        </el-scrollbar>
       </div>
+      <!--主内容页-->
+      <div class="content" id="bookMainCon" slot="content" @click="loadPrevClick" @swipeleft="swipeLeft" @swiperight="swipeRight">
+        <!--header-->
+        <mt-header :title=title v-show="showTabbar">
+          <router-link to="/NovelTongYong/NovelBookShelfCurrency" slot="left">
+            <mt-button icon="back">返回</mt-button>
+          </router-link>
+          <mt-button icon="more" slot="right" @click="more"></mt-button>
+        </mt-header>
+        <span id="zhangjieName">{{chapterTitle}}({{currentPages}})</span>
+        <!--文章-->
+        <div id="magazine" dir="ltr" @touchmove="stopDefault">
+          <div v-for="html in newHtmlArr" class="novel-page"
+               :style="{fontSize:rangeValue+'px ',fontFamily:myFontFamily}">
+            <div v-for="txt in html" v-html="txt">
+            </div>
+          </div>
+        </div>
+        <!--底部切换页面-->
+        <mt-tabbar style="background:none; z-index: 100" v-show="showTabbar">
+          <particle-effect-button
+            :hidden="isHidden"
+            color="rgb(50, 186, 250)"
+            :duration="500"
+            type="triangle"
+            drawStyle="stroke"
+          >
+            <mt-tab-item id="上一章" style="width: 100%;">
+              <el-button type="primary" icon="el-icon-arrow-left" @click="loadPrev(-1)" style="float: left">上一章
+              </el-button>
+              <el-button type="primary" @click="sheZhi()">设置</el-button>
+              <el-button type="primary" @click="loadPrev(1)" style="float: right">下一章<i
+                class="el-icon-arrow-right el-icon--right"></i></el-button>
+            </mt-tab-item>
+          </particle-effect-button>
+        </mt-tabbar>
+      </div>
+    </vue-drawer-layout>
+    <!--draggabilly-button-->
+    <!--<div class="draggable" id="draggable">
+      <mt-palette-button content="+"  mainButtonStyle="color:#fff;background-color:#26a2ff;">
+        <div class="my-icon-button"></div>
+      </mt-palette-button>
+    </div>-->
+  </div>
 </template>
 
 <script>
@@ -133,6 +134,8 @@
     },
     data() {
       return {
+        chapterTitle:'',//当前章节的title
+        currentPage:10,//当前章节所在第几页
         bgImages:[],
         bgImg: 'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg5.jpg',//背景图
         color: '#000000',//字体颜色
@@ -165,7 +168,9 @@
         page: 0, //章节
         bodyText: '',
         pageVal: 1,//分页第几页
-        theParams: '111'
+        theParams: '111',
+        allPages:2,//当前章节的总页数
+        currentPages:'1/n',//当前章节的当前页/当前章节的总页数
       }
     },
     computed: {
@@ -348,6 +353,7 @@
         czyBooks = JSON.stringify(czyBooks);
         localStorage.removeItem("czyBooks");
         localStorage.setItem("czyBooks", czyBooks);//以“czyBooks”为名称存储书籍
+        $('#magazine .page').css("background-image",`url(${values})`);
       },
       //改变字体大小
       handleChange(value) {
@@ -457,6 +463,7 @@
       handleCurrentChange(val) {
         this.chapterListNew = this.chapterList.slice((val - 1) * 100, (val) * 100);
         //console.log(`: ${val}`);
+        this.currentPage=val;
         //console.log(this.chapterListNew);
         this.pageVal = val;
         setTimeout(() => {
@@ -505,7 +512,7 @@
         //console.log(chapters[this.page].title)
         this.currentPage = parseInt(this.page / 100) + 1;
         this.handleCurrentChange(this.currentPage);
-        //console.log(chapters[this.page].link)
+        this.chapterTitle=chapters[this.page].title;//章节的title
         let txtUrl = `${this.GLOBAL.kuaYu}http://chapter2.zhuishushenqi.com/chapter/${encodeURIComponent(chapters[this.page].link)}?k=2124b73d7e2e1945&t=1468223717`;
         axios.get(txtUrl).then((response) => {
           //console.log(txtUrl)
@@ -594,8 +601,8 @@
                   removeBook();
                 }
               }
-
               removeBook();
+              this.allPages=$("#magazine").turn("pages");
               /*this.$nextTick(() => {
 
               });*/
@@ -827,6 +834,11 @@
                             // Implementation
                             selfVue.loadCurrentPage = page;
                           },
+                          turned: function (event, page, pageObject) {
+                            // Implementation
+                            selfVue.currentPages=`${page}/${selfVue.allPages}`;
+                            console.log(selfVue.currentPages);
+                          },
                         }
                       });
                       $('#magazine').turn('range', 5);//Gets a range of pages from pageNumber needed to keep in memory.
@@ -861,7 +873,7 @@
       this.$mui.back = function () {//从阅读到书架
         that.$router.push('/NovelTongYong/NovelBookShelfCurrency')
       };
-      $('#magazine .page').css("background-image",`url(${this.bgImg})`);
+
     },
     mounted() {
       //console.log(this.bgImages);
@@ -1055,6 +1067,18 @@
 
   .page-loadmore-list {
     padding-bottom: 20px;
+  }
+  #bookMainCon{
+    position: relative;
+  }
+  #zhangjieName{
+    width: 100%;
+    position: absolute;
+    font-size: 10px;
+    z-index: 199;
+    left: 50%;
+    transform: translate(-50%, 12px);
+    text-align: center;
   }
 </style>
 

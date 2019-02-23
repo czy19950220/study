@@ -93,7 +93,7 @@ export default {
       if (this.addRemove=='添加书架') {
         this.addBook();
       }
-      this.$router.push('/NovelTongYong/NovelReadCurrency')
+      this.$router.push('/NovelTongYong/NovelReadTwoCurrency')
     },
     //转化封面url为实际url
     url2Real(url) {
