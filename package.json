@@ -13,6 +13,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@babel/runtime": "^7.4.4",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "draggabilly": "^2.2.0",
@@ -32,7 +33,7 @@
     "vue-axios": "^2.1.2",
     "vue-color-picker-wheel": "^0.4.1",
     "vue-drawer-layout": "^0.3.1",
-    "vue-froala-wysiwyg": "^2.8.4",
+    "vue-froala-wysiwyg": "^2.9.5",
     "vue-particle-effect-button": "^1.0.2",
     "vue-qriously": "^1.1.1",
     "vue-router": "^3.0.1",
@@ -40,6 +41,8 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/runtime-corejs2": "^7.4.4",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.22.1",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
