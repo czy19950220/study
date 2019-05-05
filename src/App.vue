@@ -26,7 +26,7 @@
       font(){
         let myFont = localStorage.getItem("fontFamily");
         if (myFont==null || myFont=='' || myFont==undefined){
-          localStorage.setItem("fontFamily",'unset');//默认汉仪细行楷.
+          localStorage.setItem("fontFamily",'unset');//默认汉仪细行楷...
         } else {
           this.myFontFamilyChange(myFont);
         }
