@@ -71,7 +71,8 @@
         </el-scrollbar>
       </div>
       <!--主内容页-->
-      <div class="content" id="bookMainCon" slot="content" @click="loadPrevClick" @swipeleft="swipeLeft" @swiperight="swipeRight">
+      <div class="content" id="bookMainCon" slot="content" @click="loadPrevClick" @swipeleft="swipeLeft"
+           @swiperight="swipeRight">
         <!--header-->
         <mt-header :title=title v-show="showTabbar">
           <router-link to="/NovelTongYong/NovelBookShelfCurrency" slot="left">
@@ -134,9 +135,9 @@
     },
     data() {
       return {
-        chapterTitle:'',//当前章节的title
-        currentPage:10,//当前章节所在第几页
-        bgImages:[],
+        chapterTitle: '',//当前章节的title
+        currentPage: 10,//当前章节所在第几页
+        bgImages: [],
         bgImg: 'https://czy-1257069199.cos.ap-beijing.myqcloud.com/my-app/novel/bg5.jpg',//背景图
         color: '#000000',//字体颜色
         vueDrawerLayout: false,//是否是打开了切换章节...
@@ -169,8 +170,8 @@
         bodyText: '',
         pageVal: 1,//分页第几页
         theParams: '111',
-        allPages:2,//当前章节的总页数
-        currentPages:'1/n',//当前章节的当前页/当前章节的总页数
+        allPages: 2,//当前章节的总页数
+        currentPages: '1/n',//当前章节的当前页/当前章节的总页数
       }
     },
     computed: {
@@ -206,7 +207,7 @@
       },
       bgImg: {
         handler(curVal, oldVal) {
-          $('#magazine .page').css("background-image",`url(${curVal})`);
+          $('#magazine .page').css("background-image", `url(${curVal})`);
           let index = this.page - (this.pageVal - 1) * 100;
           this.toChapter(this.title, index);
           this.bgImgChange(curVal);
@@ -354,7 +355,7 @@
         czyBooks = JSON.stringify(czyBooks);
         localStorage.removeItem("czyBooks");
         localStorage.setItem("czyBooks", czyBooks);//以“czyBooks”为名称存储书籍
-        $('#magazine .page').css("background-image",`url(${values})`);
+        $('#magazine .page').css("background-image", `url(${values})`);
       },
       //改变字体大小
       handleChange(value) {
@@ -385,7 +386,7 @@
           }
         }
         //console.log(this.bgImg)
-        $('#magazine .page').css("background-image",`url(${this.bgImg})`);
+        $('#magazine .page').css("background-image", `url(${this.bgImg})`);
         this.page = index;
       },
       //改变书架存储的阅读至第几章
@@ -465,7 +466,7 @@
       handleCurrentChange(val) {
         this.chapterListNew = this.chapterList.slice((val - 1) * 100, (val) * 100);
         //console.log(`: ${val}`);
-        this.currentPage=val;
+        this.currentPage = val;
         //console.log(this.chapterListNew);
         this.pageVal = val;
         setTimeout(() => {
@@ -514,7 +515,7 @@
         //console.log(chapters[this.page].title)
         this.currentPage = parseInt(this.page / 100) + 1;
         this.handleCurrentChange(this.currentPage);
-        this.chapterTitle=chapters[this.page].title;//章节的title
+        this.chapterTitle = chapters[this.page].title;//章节的title
         let txtUrl = `${this.GLOBAL.kuaYu}http://chapter2.zhuishushenqi.com/chapter/${encodeURIComponent(chapters[this.page].link)}?k=2124b73d7e2e1945&t=1468223717`;
         axios.get(txtUrl).then((response) => {
           //console.log(txtUrl)
@@ -603,8 +604,9 @@
                   removeBook();
                 }
               }
+
               removeBook();
-              this.allPages=$("#magazine").turn("pages");
+              this.allPages = $("#magazine").turn("pages");
               /*this.$nextTick(() => {
 
               });*/
@@ -838,7 +840,7 @@
                           },
                           turned: function (event, page, pageObject) {
                             // Implementation
-                            selfVue.currentPages=`${page}/${selfVue.allPages}`;
+                            selfVue.currentPages = `${page}/${selfVue.allPages}`;
                             console.log(selfVue.currentPages);
                           },
                         }
@@ -875,10 +877,10 @@
       this.$mui.back = function () {//从阅读到书架
         that.$router.push('/NovelTongYong/NovelBookShelfCurrency')
       };
-      let img1=JSON.parse(localStorage.getItem("czyBooks")).bgImg;
-      setTimeout(()=>{
-        $('#magazine .page').css("background-image",`url(${img1})`);
-      },2000);
+      let img1 = JSON.parse(localStorage.getItem("czyBooks")).bgImg;
+      setTimeout(() => {
+        $('#magazine .page').css("background-image", `url(${img1})`);
+      }, 2000);
 
     },
     mounted() {
@@ -888,7 +890,7 @@
       //this.openFullScreen();
       //this.wrapperHeight = document.documentElement.clientHeight - this.$refs.wrapper.getBoundingClientRect().top;
       axios.get('https://raw.githubusercontent.com/czy19950220/study/master/src/assets/js/bgImg.json').then((response) => {
-        this.bgImages=response.data.bgImg;
+        this.bgImages = response.data.bgImg;
       });
     },
     beforeRouteLeave(to, from, next) {
@@ -902,7 +904,7 @@
   /*#region*/
   /*仿真读书设置*/
   .novel-page {
-    background-color: #fff;
+    background-color: #000;
   }
 
   #magazine {
@@ -911,7 +913,7 @@
   }
 
   .book-con {
-    background-color: white;
+    background-color: black;
   }
 
   .book-con div {
@@ -1073,10 +1075,12 @@
   .page-loadmore-list {
     padding-bottom: 20px;
   }
-  #bookMainCon{
+
+  #bookMainCon {
     position: relative;
   }
-  #zhangjieName{
+
+  #zhangjieName {
     width: 100%;
     position: absolute;
     font-size: 10px;

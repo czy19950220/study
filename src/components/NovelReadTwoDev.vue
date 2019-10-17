@@ -708,7 +708,6 @@
     created() {
       //this.getNovel();
       this.novel();
-      //console.log(this.page)
     },
     mounted(){
 
@@ -728,7 +727,7 @@
   /*#region*/
   /*仿真读书设置*/
   .novel-page{
-    background-color: #fff;
+    background-color: #000;
   }
   #magazine{
     height: calc(100% - 40px);
